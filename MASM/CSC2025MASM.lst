@@ -1,0 +1,65 @@
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/18/24 11:54:59
+main.asm						     Page 1 - 1
+
+
+				; MASM Template
+				; Spencer MedberrY
+				; 09/18/2024
+				; Create a template for assembler files.
+
+				.386P
+				.model flat
+
+				extern   _ExitProcess@4: near
+
+ 00000000			.data
+
+ 00000000			.code
+ 00000000			main PROC near
+ 00000000			_main:
+
+ 00000000  6A 00			push	0
+ 00000002  E8 00000000 E		call	_ExitProcess@4
+
+ 00000007			main ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/18/24 11:54:59
+main.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000007 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000007 Public
+  _main  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors
