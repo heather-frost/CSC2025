@@ -1,0 +1,6 @@
+﻿  Assembling main.asm...
+main.asm(6): error A2008: syntax error : .
+main.asm(7): error A2008: syntax error : .
+main.asm(14): error A2008: syntax error : near
+main.asm(20): fatal error A1010: unmatched block nesting : main
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\BuildCustomizations\masm.targets(70,5): error MSB3721: The command "ml64.exe /c /nologo /Zi /Fo"x64\Debug\main.obj" /W3 /errorReport:prompt  /Tamain.asm" exited with code 1.
