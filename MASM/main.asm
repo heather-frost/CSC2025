@@ -1,5 +1,5 @@
 ; MASM Template
-; Spencer MedberrY
+; Spencer Medberry
 ; 09/18/2024
 ; Create a template for assembler files.
 
@@ -18,4 +18,4 @@ _main:
 	call	_ExitProcess@4
 
 main ENDP
-END
+END 

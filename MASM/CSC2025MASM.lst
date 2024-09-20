@@ -1,9 +1,9 @@
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/18/24 11:54:59
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/20/24 11:50:40
 main.asm						     Page 1 - 1
 
 
 				; MASM Template
-				; Spencer MedberrY
+				; Spencer Medberry
 				; 09/18/2024
 				; Create a template for assembler files.
 
@@ -23,7 +23,7 @@ main.asm						     Page 1 - 1
 
  00000007			main ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/18/24 11:54:59
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/20/24 11:50:40
 main.asm						     Symbols 2 - 1
 
 
