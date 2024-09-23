@@ -16,7 +16,7 @@
 ;     EDX - Caller Saved register - data, I use it for saving and restoring
 ;			the return address
 ;     ESI - Callee Saved register - Source Index
-;     EDI - Callee Saved register - Destination Index
+;     EDI - Callee Saved register - De stination Index
 ;     ESP - Callee Saved register - stack pointer
 ;     EBP - Callee Saved register - base pointer.386P
 

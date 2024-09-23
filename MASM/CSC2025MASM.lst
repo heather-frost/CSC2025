@@ -1,73 +1,169 @@
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:48:13
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:55:54
 main.asm						     Page 1 - 1
 
 
-				; Show how to print Hello
-				; Spencer Medberry
-				; 09/23/2024
-				; Print "Hello World!" and "Hello Now"
-				.386P
+				; Main Console program
+				; Wayne Cook
+				; 20 September 2024
+				; Show how to do input and output
+				; Revised: WWC 14 March 2024 Added new module
+				; Revised 15 March 2024 Added this comment ot force a new commit.
+				; Register names:
+				; Register names are NOT case sensitive eax and EAX are the same register
+				; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
+				;	the right most 16 bits of EAX). AL is the right-most 8 bits.
+				; Writing into AX or AL effects the right most bits of EAX.
+				;     EAX - caller saved register - usually used for communication between
+				;			caller and callee.
+				;     EBX - Callee saved register
+				;     ECX - Caller saved register - Counter register 
+				;     EDX - Caller Saved register - data, I use it for saving and restoring
+				;			the return address
+				;     ESI - Callee Saved register - Source Index
+				;     EDI - Callee Saved register - Destination Index
+				;     ESP - Callee Saved register - stack pointer
+				;     EBP - Callee Saved register - base pointer.386P
 
 				.model flat
 
-				extern _GetStdHandle@4:near
-				extern _ExitProcess@4: near
-				extern _WriteConsoleA@20:near
-				extern _ReadConsoleA@20:near
+				; Library calls used for input from and output to the console
+				extern  _GetStdHandle@4:near
+				extern  _WriteConsoleA@20:near
+				extern  _ReadConsoleA@20:near
+				extern  _ExitProcess@4: near
 
  00000000			.data
 
- 00000000 48 65 6C 6C 6F	msg byte 'Hello World!', 10,0
-	   20 57 6F 72 6C
-	   64 21 0A 00
- 0000000E 48 65 6C 6C 6F	msg1 byte 'Hello Now', 10,0
-	   20 4E 6F 77 0A
-	   00
- 00000019 57 68 61 74 20	prompt byte 'What is your name: ',0
-	   69 73 20 79 6F
-	   75 72 20 6E 61
-	   6D 65 3A 20 00
- 0000002D 00000000		handle dword  ?
- 00000031 00000000		written dword  ?
+ 00000000 48 65 6C 6C 6F	msg             byte  "Hello, World", 10, 0   ; ends with line feed (10) and NULL
+	   2C 20 57 6F 72
+	   6C 64 0A 00
+ 0000000E 50 6C 65 61 73	prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
+	   65 20 74 79 70
+	   65 20 79 6F 75
+	   72 20 6E 61 6D
+	   65 3A 20 00
+ 00000026 0A 59 6F 75 20	results         byte  10,"You typed: ", 0
+	   74 79 70 65 64
+	   3A 20 00
+ 00000033 00000000		outputHandle    dword ?           ; Input handle reading from console. uninitslized
+ 00000037 00000000		inputHandle     dword ?           ; Output handle writing to console. uninitslized
+ 0000003B 00000000		written         dword ?
+ =-0000000A			INPUT_FLAG      equ   -10
+ =-0000000B			OUTPUT_FLAG     equ   -11
 
-				; Codes
- 00000035 FFFFFFF5		outflag dword -11
- 00000039 FFFFFFF6		inflag  dword -10
-
+				; Reading and writing requires buffers. I fill them with 00h.
+ 0000003F  00000400 [		readBuffer      byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000043F  00000400 [		writeBuffer     byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000083F 00000400		numCharsToRead  dword 1024
+ 00000843 00000000		numCharsRead    dword ?                                   ; Unset or uninitialized
 
 
  00000000			.code
 
- 00000000			main PROC near
- 00000000			_main:
+				; Initialize Input and Output handles so you only have to do that once.
+				; This is your first assembly routine
+ 00000000			initialize_console PROC near
+ 00000000			_initialize_console:
 
-				   ; handle = GetStdHandle(-11)
- 00000000  6A F5		   push -11
- 00000002  E8 00000000 E	   call _GetStdHandle@4
- 00000007  A3 0000002D R	   mov    handle, eax
-				   ; WriteConsole(handle, msg[0], 14, written, 0)
- 0000000C  6A 00		   push 0
- 0000000E  68 00000031 R	   push offset written
- 00000013  6A 0D		   push 13
- 00000015  68 00000000 R	   push offset msg
- 0000001A  B8 00000000 R	   mov eax, offset msg
- 0000001F  FF 35 0000002D R	   push handle
- 00000025  E8 00000000 E	   call _WriteConsoleA@20
+				    ; handle = GetStdHandle(-11)
+ 00000000  6A F5		    push    OUTPUT_FLAG
+ 00000002  E8 00000000 E	    call    _GetStdHandle@4
+ 00000007  A3 00000033 R	    mov     outputHandle, eax
+				    ; handle = GetStdHandle(-10)
+ 0000000C  6A F6		    push  INPUT_FLAG
+ 0000000E  E8 00000000 E	    call  _GetStdHandle@4
+ 00000013  A3 00000037 R	    mov   inputHandle, eax
+ 00000018  C3			    ret
+ 00000019			initialize_console ENDP
 
-				   ; WriteConsole(handle, msg1[0], 12, written, 0)
- 0000002A  6A 00		   push 0
- 0000002C  68 00000031 R	   push offset written
- 00000031  6A 0B		   push 11
- 00000033  68 0000000E R	   push offset msg1
- 00000038  FF 35 0000002D R	   push handle
- 0000003E  E8 00000000 E	   call _WriteConsoleA@20
+				; Now the read/write handles are set, read a line
+ 00000019			readline PROC near
+ 00000019			_readline: 
+				      ; ReadConsole(handle, &buffer, numCharToRead, numCharsRead, null)
+ 00000019  6A 00		    push  0
+ 0000001B  68 00000843 R	    push  offset numCharsRead
+ 00000020  FF 35 0000083F R	    push  numCharsToRead
+ 00000026  68 0000003F R	    push  offset readBuffer
+ 0000002B  FF 35 00000037 R	    push  inputHandle
+ 00000031  E8 00000000 E	    call  _ReadConsoleA@20
+ 00000036  C3			    ret
+ 00000037			readline ENDP
 
- 00000043  6A 00		   push 0
- 00000045  E8 00000000 E	   call _ExitProcess@4
+				; All strings need to end with a NULL (0). So I do not have to manually count the number of
+				;   characters in the line, I wrote this routine.
+ 00000037			charCount PROC near
+ 00000037			_charCount:
+ 00000037  5A			    pop  edx                        ; Save return address
+ 00000038  5B			    pop  ebx                        ; saqve offset/address of string
+ 00000039  52			    push edx                        ; Put return address back on the stack
+ 0000003A  B8 00000000		    mov  eax,0                      ; load counter to 0
+ 0000003F  B9 00000000		    mov  ecx,0                      ; Clear ECX register
+ 00000044			_countLoop:
+ 00000044  8A 0B		    mov  cl,[ebx]                   ; Look at the character in the string
+ 00000046  83 F9 00		    cmp  ecx,0                      ; check for end of string.
+ 00000049  74 04		    je   _endCount
+ 0000004B  40			    inc  eax                        ; Up the count by one
+ 0000004C  43			    inc  ebx                        ; go to next letter
+ 0000004D  EB F5		    jmp  _countLoop
+ 0000004F			_endCount:
+ 0000004F  C3			    ret                             ;Return with EAX containing character count
+ 00000050			charCount ENDP
 
- 0000004A			main ENDP
+				; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+				; then save any other expected parameters in registers, then restore the return address to the stack.
+ 00000050			writeline PROC near
+ 00000050			_writeline:
+ 00000050  5A			    pop   edx                        ; pop return address from the stack into EDX
+ 00000051  5B			    pop   ebx                        ; Pop the buffer location of string to be printed into EBX
+ 00000052  58			    pop   eax                        ; Pop the buffer size string to be printed into EAX.
+ 00000053  52			    push  edx                        ; Restore return address to the stack
+
+
+				    ; WriteConsole(handle, &msg[0], numCharsToWrite, &written, 0)
+ 00000054  6A 00		    push   0
+ 00000056  68 0000003B R	    push   offset written
+ 0000005B  50			    push   eax                       ; return size to the stack for the call to _WriteConsoleA@20 (20 is how many bits are in the call stack)
+ 0000005C  53			    push   ebx                       ; return the offset of the line to be written
+ 0000005D  FF 35 00000033 R	    push   outputHandle
+ 00000063  E8 00000000 E	    call   _WriteConsoleA@20
+ 00000068  C3			    ret
+ 00000069			writeline ENDP
+
+ 00000069			main PROC near
+ 00000069			_main:
+ 00000069  E8 FFFFFF92		    call initialize_console                 ; Initialize read and write to console
+				    ; Type a prompt for the user
+				    ; WriteConsole(handle, &Prompt[0], 17, &written, 0)
+ 0000006E  68 0000000E R	    push  offset prompt
+ 00000073  E8 FFFFFFBF		    call  charCount
+ 00000078  6A 00		    push  0
+ 0000007A  68 0000003B R	    push  offset written
+ 0000007F  50			    push  eax
+ 00000080  68 0000000E R	    push  offset prompt
+ 00000085  B8 0000000E R	    mov   eax, offset prompt
+ 0000008A  FF 35 00000033 R	    push  outputHandle
+ 00000090  E8 00000000 E	    call  _WriteConsoleA@20
+				    ; Read what the user entered.
+ 00000095  E8 FFFFFF7F		    call  readline
+				    ; The following embeds the above code in a common routine, so the more complicated call only needs to be written once.
+				    ; writeline(&results[0], 12)
+ 0000009A  6A 0C		    push  12
+ 0000009C  68 00000026 R	    push  offset results
+ 000000A1  E8 FFFFFFAA		    call  writeline
+ 000000A6  FF 35 0000083F R	    push  numCharsToRead
+ 000000AC  68 0000003F R	    push  offset readBuffer
+ 000000B1  E8 FFFFFF9A		    call  writeline
+ 000000B6			exit:
+ 000000B6  6A 00			push	0
+ 000000B8  E8 00000000 E		call	_ExitProcess@4
+
+ 000000BD			main ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:48:13
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:55:54
 main.asm						     Symbols 2 - 1
 
 
@@ -78,16 +174,27 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000003D Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004A Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000847 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000BD Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004A Public
-  _main  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
+charCount  . . . . . . . . . . .	P Near	 00000037 _TEXT	Length= 00000019 Public
+  _charCount . . . . . . . . . .	L Near	 00000037 _TEXT	
+  _countLoop . . . . . . . . . .	L Near	 00000044 _TEXT	
+  _endCount  . . . . . . . . . .	L Near	 0000004F _TEXT	
+initialize_console . . . . . . .	P Near	 00000000 _TEXT	Length= 00000019 Public
+  _initialize_console  . . . . .	L Near	 00000000 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000069 _TEXT	Length= 00000054 Public
+  _main  . . . . . . . . . . . .	L Near	 00000069 _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 000000B6 _TEXT	
+readline . . . . . . . . . . . .	P Near	 00000019 _TEXT	Length= 0000001E Public
+  _readline  . . . . . . . . . .	L Near	 00000019 _TEXT	
+writeline  . . . . . . . . . . .	P Near	 00000050 _TEXT	Length= 00000019 Public
+  _writeline . . . . . . . . . .	L Near	 00000050 _TEXT	
 
 
 Symbols:
@@ -103,17 +210,22 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
+INPUT_FLAG . . . . . . . . . . .	Number	 -0000000Ah   
+OUTPUT_FLAG  . . . . . . . . . .	Number	 -0000000Bh   
 _ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
 _GetStdHandle@4  . . . . . . . .	L Near	 00000000 FLAT	External
 _ReadConsoleA@20 . . . . . . . .	L Near	 00000000 FLAT	External
 _WriteConsoleA@20  . . . . . . .	L Near	 00000000 FLAT	External
-handle . . . . . . . . . . . . .	DWord	 0000002D _DATA	
-inflag . . . . . . . . . . . . .	DWord	 00000039 _DATA	
-msg1 . . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+inputHandle  . . . . . . . . . .	DWord	 00000037 _DATA	
 msg  . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-outflag  . . . . . . . . . . . .	DWord	 00000035 _DATA	
-prompt . . . . . . . . . . . . .	Byte	 00000019 _DATA	
-written  . . . . . . . . . . . .	DWord	 00000031 _DATA	
+numCharsRead . . . . . . . . . .	DWord	 00000843 _DATA	
+numCharsToRead . . . . . . . . .	DWord	 0000083F _DATA	
+outputHandle . . . . . . . . . .	DWord	 00000033 _DATA	
+prompt . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+readBuffer . . . . . . . . . . .	Byte	 0000003F _DATA	
+results  . . . . . . . . . . . .	Byte	 00000026 _DATA	
+writeBuffer  . . . . . . . . . .	Byte	 0000043F _DATA	
+written  . . . . . . . . . . . .	DWord	 0000003B _DATA	
 
 	   0 Warnings
 	   0 Errors
