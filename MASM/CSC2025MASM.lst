@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:00:14
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:48:13
 main.asm						     Page 1 - 1
 
 
@@ -23,8 +23,17 @@ main.asm						     Page 1 - 1
  0000000E 48 65 6C 6C 6F	msg1 byte 'Hello Now', 10,0
 	   20 4E 6F 77 0A
 	   00
- 00000019 00000000		handle dword  ?
- 0000001D 00000000		written dword  ?
+ 00000019 57 68 61 74 20	prompt byte 'What is your name: ',0
+	   69 73 20 79 6F
+	   75 72 20 6E 61
+	   6D 65 3A 20 00
+ 0000002D 00000000		handle dword  ?
+ 00000031 00000000		written dword  ?
+
+				; Codes
+ 00000035 FFFFFFF5		outflag dword -11
+ 00000039 FFFFFFF6		inflag  dword -10
+
 
 
  00000000			.code
@@ -35,22 +44,22 @@ main.asm						     Page 1 - 1
 				   ; handle = GetStdHandle(-11)
  00000000  6A F5		   push -11
  00000002  E8 00000000 E	   call _GetStdHandle@4
- 00000007  A3 00000019 R	   mov    handle, eax
+ 00000007  A3 0000002D R	   mov    handle, eax
 				   ; WriteConsole(handle, msg[0], 14, written, 0)
  0000000C  6A 00		   push 0
- 0000000E  68 0000001D R	   push offset written
+ 0000000E  68 00000031 R	   push offset written
  00000013  6A 0D		   push 13
  00000015  68 00000000 R	   push offset msg
  0000001A  B8 00000000 R	   mov eax, offset msg
- 0000001F  FF 35 00000019 R	   push handle
+ 0000001F  FF 35 0000002D R	   push handle
  00000025  E8 00000000 E	   call _WriteConsoleA@20
 
 				   ; WriteConsole(handle, msg1[0], 12, written, 0)
  0000002A  6A 00		   push 0
- 0000002C  68 0000001D R	   push offset written
+ 0000002C  68 00000031 R	   push offset written
  00000031  6A 0B		   push 11
  00000033  68 0000000E R	   push offset msg1
- 00000038  FF 35 00000019 R	   push handle
+ 00000038  FF 35 0000002D R	   push handle
  0000003E  E8 00000000 E	   call _WriteConsoleA@20
 
  00000043  6A 00		   push 0
@@ -58,7 +67,7 @@ main.asm						     Page 1 - 1
 
  0000004A			main ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:00:14
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    09/23/24 11:48:13
 main.asm						     Symbols 2 - 1
 
 
@@ -69,7 +78,7 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000021 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000003D Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 0000004A Para	  Public  'CODE'	
 
 
@@ -98,10 +107,13 @@ _ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
 _GetStdHandle@4  . . . . . . . .	L Near	 00000000 FLAT	External
 _ReadConsoleA@20 . . . . . . . .	L Near	 00000000 FLAT	External
 _WriteConsoleA@20  . . . . . . .	L Near	 00000000 FLAT	External
-handle . . . . . . . . . . . . .	DWord	 00000019 _DATA	
+handle . . . . . . . . . . . . .	DWord	 0000002D _DATA	
+inflag . . . . . . . . . . . . .	DWord	 00000039 _DATA	
 msg1 . . . . . . . . . . . . . .	Byte	 0000000E _DATA	
 msg  . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-written  . . . . . . . . . . . .	DWord	 0000001D _DATA	
+outflag  . . . . . . . . . . . .	DWord	 00000035 _DATA	
+prompt . . . . . . . . . . . . .	Byte	 00000019 _DATA	
+written  . . . . . . . . . . . .	DWord	 00000031 _DATA	
 
 	   0 Warnings
 	   0 Errors
