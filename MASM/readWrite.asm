@@ -85,7 +85,7 @@ readline ENDP
 charCount PROC near
 _charCount:
     pop  edx                        ; Save return address
-    pop  ebx                        ; saqve offset/address of string
+    pop  ebx                        ; save offset/address of string
     push edx                        ; Put return address back on the stack
     mov  eax,0                      ; load counter to 0
     mov  ecx,0                      ; Clear ECX register

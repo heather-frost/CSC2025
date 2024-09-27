@@ -24,5 +24,8 @@
     <MASM Include="readWrite.asm">
       <Filter>Source Files</Filter>
     </MASM>
+    <MASM Include="fibonacci.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

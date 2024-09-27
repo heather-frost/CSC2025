@@ -24,14 +24,14 @@
 .model flat
 extern  _ExitProcess@4: near
 extern initialize_console: near
-extern start: near
+extern fibonacci: near
 
 .code
 
 main PROC near
 _main:
 	call initialize_console
-	call start
+	call fibonacci
 	 ; ExitProcess(uExitCode)
     push  5
     call  _ExitProcess@4
