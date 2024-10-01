@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/01/24 16:34:20
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/01/24 17:04:50
 fibonacci.asm						     Page 1 - 1
 
 
@@ -43,8 +43,8 @@ fibonacci.asm						     Page 1 - 1
 	   6E 75 6D 62 65
 	   72 20 69 73 3A
 	   20 00
- 00000036 00000001		addend1         dword 1
- 0000003A 00000002		addend2         dword 2
+ 00000036 00000003		addend1         dword 3
+ 0000003A 00000005		addend2         dword 5
  0000003E 00000400		numCharsToRead  dword 1024
  00000042 00000000		bufferAddr      dword ?
 
@@ -77,35 +77,41 @@ fibonacci.asm						     Page 1 - 1
  00000040  E8 00000000 E	    call  writeline
 
 				    ; Try print a number
- 00000045  68 00000025 R	    push  offset numberPrint
- 0000004A  E8 00000000 E	    call  charCount
- 0000004F  50			    push  eax
- 00000050  68 00000025 R	    push  offset numberPrint
- 00000055  E8 00000000 E	    call  writeline
- 0000005A  A1 00000036 R	    mov   eax, addend1
- 0000005F  50			    push  eax
- 00000060  E8 00000000 E	    call  writeNumber
- 00000065  A1 0000003A R	    mov   eax, addend2
- 0000006A  50			    push  eax
- 0000006B  E8 00000000 E	    call  writeNumber
- 00000070  A1 0000003A R	    mov   eax, addend2
- 00000075  A1 00000036 R	    mov   eax, addend1
- 0000007A  50			    push  eax
- 0000007B  E8 00000000 E	    call  writeNumber
+ 00000045  E8 00000001		    call fprogress
 
- 00000080			exit:
- 00000080  C3			    ret                                     ; Return to the main program.
+ 0000004A			exit:
+ 0000004A  C3			    ret                                     ; Return to the main program.
 
- 00000081			fibonacci ENDP
+ 0000004B			fibonacci ENDP
 
- 00000081			fprogress PROC near
- 00000081			_fprogress:
-
- 00000081  C3			    ret
- 00000082			fprogress ENDP
+ 0000004B			fprogress PROC near
+ 0000004B			_fprogress:
+ 0000004B  68 00000025 R	push  offset numberPrint
+ 00000050  E8 00000000 E	    call  charCount
+ 00000055  50			    push  eax
+ 00000056  68 00000025 R	    push  offset numberPrint
+ 0000005B  E8 00000000 E	    call  writeline
+ 00000060  A1 00000036 R	    mov   eax, addend1
+ 00000065  50			    push  eax
+ 00000066  E8 00000000 E	    call  writeNumber
+ 0000006B  A1 0000003A R	    mov   eax, addend2
+ 00000070  50			    push  eax
+ 00000071  E8 00000000 E	    call  writeNumber
+ 00000076  A1 00000036 R	    mov   eax, addend1
+ 0000007B  03 05 0000003A R	    add   eax, addend2
+ 00000081  A3 0000003A R	    mov   addend2, eax
+ 00000086  50			    push  eax
+ 00000087  E8 00000000 E	    call  writeNumber
+ 0000008C  A1 0000003A R	    mov   eax, addend2
+ 00000091  2B 05 00000036 R	    sub   eax, addend1
+ 00000097  A3 00000036 R	    mov   addend1, eax
+ 0000009C  50			    push  eax
+ 0000009D  E8 00000000 E	    call  writeNumber
+ 000000A2  C3			    ret
+ 000000A3			fprogress ENDP
 
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/01/24 16:34:20
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/01/24 17:04:50
 fibonacci.asm						     Symbols 2 - 1
 
 
@@ -117,18 +123,18 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000046 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000082 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000A3 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000081 Public
+fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004B Public
   _fibonacci . . . . . . . . . .	L Near	 00000000 _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 00000080 _TEXT	
-fprogress  . . . . . . . . . . .	P Near	 00000081 _TEXT	Length= 00000001 Public
-  _fprogress . . . . . . . . . .	L Near	 00000081 _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 0000004A _TEXT	
+fprogress  . . . . . . . . . . .	P Near	 0000004B _TEXT	Length= 00000058 Public
+  _fprogress . . . . . . . . . .	L Near	 0000004B _TEXT	
 
 
 Symbols:
