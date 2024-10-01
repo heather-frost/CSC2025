@@ -3,16 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:main.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:fibonacci.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:readWrite.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:fibonacci.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:main.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite-1.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:readWrite-1.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\start-1.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:start-1.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,41 +38,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "fibonacci.asm",
-              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
-              "RelativeDocumentMoniker": "fibonacci.asm",
-              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
-              "RelativeToolTip": "fibonacci.asm",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:40:34.43Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "main.asm",
-              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm",
-              "RelativeDocumentMoniker": "main.asm",
-              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm",
-              "RelativeToolTip": "main.asm",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAkwCEAAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.271Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "readWrite.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite.asm",
               "RelativeDocumentMoniker": "readWrite.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite.asm",
               "RelativeToolTip": "readWrite.asm",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAAAGoAAABCAAAAAAAAAA==",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAAAIEAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-09-27T17:38:40.345Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "fibonacci.asm",
+              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
+              "RelativeDocumentMoniker": "fibonacci.asm",
+              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
+              "RelativeToolTip": "fibonacci.asm",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAIwE0AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-09-27T17:40:34.43Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.asm",
+              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm",
+              "RelativeDocumentMoniker": "main.asm",
+              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm",
+              "RelativeToolTip": "main.asm",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-09-27T17:38:40.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "start-1.asm",
+              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\start-1.asm",
+              "RelativeDocumentMoniker": "start-1.asm",
+              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\start-1.asm",
+              "RelativeToolTip": "start-1.asm",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-01T21:03:37.196Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "readWrite-1.asm",
+              "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite-1.asm",
+              "RelativeDocumentMoniker": "readWrite-1.asm",
+              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite-1.asm",
+              "RelativeToolTip": "readWrite-1.asm",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-01T21:03:40.126Z",
               "EditorCaption": ""
             }
           ]

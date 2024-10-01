@@ -30,6 +30,8 @@ extern writeNumber: near
 prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
 results         byte  10,"You typed: ", 0
 numberPrint     byte  10,"The number is: ",0
+addend1         dword 1
+addend2         dword 2
 numCharsToRead  dword 1024
 bufferAddr      dword ?
 
@@ -67,11 +69,26 @@ _fibonacci:
     push  eax
     push  offset numberPrint
     call  writeline
-    push  773807734
+    mov   eax, addend1
+    push  eax
+    call  writeNumber
+    mov   eax, addend2
+    push  eax
+    call  writeNumber
+    mov   eax, addend2
+    mov   eax, addend1
+    push  eax
     call  writeNumber
 
 exit:
     ret                                     ; Return to the main program.
 
 fibonacci ENDP
+
+fprogress PROC near
+_fprogress:
+
+    ret
+fprogress ENDP
+
 END

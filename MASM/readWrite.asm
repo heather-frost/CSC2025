@@ -59,12 +59,17 @@ _initialize_console:
     push    OUTPUT_FLAG
     call    _GetStdHandle@4
     mov     outputHandle, eax
+
     ; handle = GetStdHandle(-10)
     push  INPUT_FLAG
     call  _GetStdHandle@4
     mov   inputHandle, eax
     ret
+
 initialize_console ENDP
+
+
+
 
 ; Now the read/write handles are set, read a line
 readline PROC near
@@ -79,6 +84,9 @@ _readline:
     mov   eax, offset readBuffer
     ret
 readline ENDP
+
+
+
 
 ; All strings need to end with a NULL (0). So I do not have to manually count the number of
 ;   characters in the line, I wrote this routine.
@@ -100,6 +108,9 @@ _endCount:
     ret                             ;Return with EAX containing character count
 charCount ENDP
 
+
+
+
 ; For all routines, the last item to be pushed on the stack is the return address, save it to a register
 ; then save any other expected parameters in registers, then restore the return address to the stack.
 writeline PROC near
@@ -118,7 +129,11 @@ _writeline:
     push   outputHandle
     call   _WriteConsoleA@20
     ret
+
 writeline ENDP
+
+
+
 
 ; For all routines, the last item to be pushed on the stack is the return address, save it to a register
 ; then save any other expected parameters in registers, then restore the return address to the stack.
