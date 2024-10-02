@@ -2,6 +2,7 @@
 ; Spencer Medberry
 ; 27 September 2024
 ; fibonacci counter built from start.asm
+
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
 ; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
@@ -27,11 +28,11 @@ extern writeNumber: near
 
 .data
 
-prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
+prompt          byte  "How many fibonacci terms would you like? Enter a number between 0 and 45: ", 0 ; ends with string terminator (NULL or 0)
 results         byte  10,"You typed: ", 0
-numberPrint     byte  10,"The number is: ",0
-addend1         dword 3
-addend2         dword 5
+numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+addend1         dword 1
+addend2         dword 2
 numCharsToRead  dword 1024
 bufferAddr      dword ?
 
