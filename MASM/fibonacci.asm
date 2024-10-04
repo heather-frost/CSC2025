@@ -4,12 +4,10 @@
 ; fibonacci counter built from start.asm
 
 ; Register names:
-;     EAX - caller saved register - usually used for communication between
-;			caller and callee.
-;     EBX - Callee saved register
+;     EAX - Caller saved register - used for addend
+;     EBX - Caller saved register - used for sum
 ;     ECX - Caller saved register - Counter register 
-;     EDX - Caller Saved register - data, I use it for saving and restoring
-;			the return address
+;     EDX - Caller saved register - data
 ;     ESI - Callee Saved register - Source Index
 ;     EDI - Callee Saved register - Destination Index
 ;     ESP - Callee Saved register - stack pointer
@@ -25,10 +23,8 @@ extern writeNumber: near
 .data
 
 prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
-results         byte  10,"You typed: ", 0
 numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-addend1         dword 1
-addend2         dword 2
+results         byte  10,"The number of terms that will be displayed is: ", 0
 numCharsToRead  dword 1024
 bufferAddr      dword ?
 
@@ -47,52 +43,65 @@ _fibonacci:
 
     ; Read what the user entered.
     call  readline
-
-    ; The following embeds the above code in a common routine, so the more complicated call only needs to be written once.
-    ; writeline(&results[0], 12)
-    mov   bufferAddr, eax
-    push  offset results
-    call  charCount
-    push  eax
-    push  offset results
-    call  writeline
-    push  numCharsToRead
-    push  bufferAddr
-    call  writeline
     
+    ;convert user entry to number
+    mov   bufferAddr, eax
+    mov   ebx, bufferAddr
+    mov   ecx,0
+    mov   eax,0
+ASCIIloop:
+    mov  cl,[ebx]                   ; Look at the character in the string
+    cmp  ecx,13                      ; check for end of string.
+    je numberGet
+    cmp  ecx,0                      ; check for end of string.
+    je numberGet
+    sub  cl,'0'
+    imul eax,10
+    add  eax,ecx
+    inc  ebx                        ; go to next letter
+    jmp  ASCIIloop
+numberGet:
+    push eax
+
+    ; Print numberPrint dialog
     push  offset numberPrint
     call  charCount
     push  eax
     push  offset numberPrint
     call  writeline
-    mov   eax, addend2
-    mov   ebx, addend1
-    mov   ecx, 0
 
-progressloop:
-    call fprogress
-    call fprogress
-    call fprogress
-    call fprogress
-    call fprogress
+    ;prep registers for addloop
+    pop ecx
+    mov   eax, 2
+    mov   ebx, 1
+;    mov   ecx, 10
 
-exit:
-    ret                                     ; Return to the main program.
-
-fibonacci ENDP
-
-fprogress PROC near
-_fprogress:
+addloop:
+    ;add function
     push  eax
     add   eax, ebx
     pop   ebx
+
+    ;store registers
     push  eax
     push  ebx
+    push  ecx
+
+    ;writeNumber
     push  eax
     call  writeNumber
+
+    ;retrieve registers
+    pop   ecx
     pop   ebx
     pop   eax
-    ret
-fprogress ENDP
 
+    ;loopy bit
+    dec ecx
+    cmp ecx,0
+    jg  addloop
+
+exit:
+    ret                                     ; Return to the main program.
+fibonacci ENDP
 END

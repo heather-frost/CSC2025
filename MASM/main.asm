@@ -34,7 +34,7 @@ _main:
 	call initialize_console
 	call fibonacci
 	 ; ExitProcess(uExitCode)
-    push  5
+    push  0
     call  _ExitProcess@4
 main ENDP
 END

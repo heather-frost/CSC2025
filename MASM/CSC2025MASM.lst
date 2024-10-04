@@ -1,132 +1,49 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 15:03:58
-fibonacci.asm						     Page 1 - 1
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 16:45:51
+main.asm						     Page 1 - 1
 
 
-				; Main Console program
-				; Spencer Medberry
-				; 27 September 2024
-				; fibonacci counter built from start.asm
-
+				; Main program
+				; Wayne Cook
+				; 29 February 2024
+				; Controls the flow of the program
+				; Revised: WWC 14 March 2024 Added new module
+				; Revised 15 March 2024 Added this comment ot force a new commit.
+				; Revised: WWC 25 April 2024 Split out the console control into second file.
+				; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
+				; Revised; SAM 04 October 2024 tweaked to work with fibonacci.asm instead of start.asm
 				; Register names:
-				;     EAX - caller saved register - usually used for communication between
-				;			caller and callee.
+				; Register names are NOT case sensitive eax and EAX are the same register
+				; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is the right most 16 bits of EAX). AL is the right-most 8 bits.
+				; Writing into AX or AL effects the right most bits of EAX.
+				;     EAX - caller saved register - usually used for communication between caller and callee.
 				;     EBX - Callee saved register
 				;     ECX - Caller saved register - Counter register 
-				;     EDX - Caller Saved register - data, I use it for saving and restoring
-				;			the return address
+				;     EDX - Caller Saved register - data, I use it for saving and restoring the return address
 				;     ESI - Callee Saved register - Source Index
 				;     EDI - Callee Saved register - Destination Index
 				;     ESP - Callee Saved register - stack pointer
-				;     EBP - Callee Saved register - base pointer.386P
+				;     EBP - Callee Saved register - base pointer
+
+				.386P
 
 				.model flat
-
-				extern writeline: near
-				extern readline: near
-				extern charCount: near
-				extern writeNumber: near
-
- 00000000			.data
-
- 00000000 48 6F 77 20 6D	prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
-	   61 6E 79 20 66
-	   69 62 6F 6E 61
-	   63 63 69 20 74
-	   65 72 6D 73 20
-	   77 6F 75 6C 64
-	   20 79 6F 75 20
-	   6C 69 6B 65 3F
-	   20 45 6E 74 65
-	   72 20 61 20 6E
-	   75 6D 62 65 72
-	   20 62 65 74 77
-	   65 65 6E 20 31
-	   20 61 6E 64 20
-	   34 35 3A 20 00
- 0000004B 0A 59 6F 75 20	results         byte  10,"You typed: ", 0
-	   74 79 70 65 64
-	   3A 20 00
- 00000058 0A 53 74 61 72	numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-	   74 69 6E 67 20
-	   77 69 74 68 20
-	   31 20 61 6E 64
-	   20 32 2C 20 74
-	   68 65 20 74 65
-	   72 6D 73 20 70
-	   72 6F 64 75 63
-	   65 64 20 61 72
-	   65 3A 20 00
- 00000089 00000001		addend1         dword 1
- 0000008D 00000002		addend2         dword 2
- 00000091 00000400		numCharsToRead  dword 1024
- 00000095 00000000		bufferAddr      dword ?
+				extern  _ExitProcess@4: near
+				extern initialize_console: near
+				extern fibonacci: near
 
  00000000			.code
 
-				; Library calls used for input from and output to the console; This is the entry procedure that does all of the testing.
- 00000000			fibonacci PROC near
- 00000000			_fibonacci:
-				    ; Type a prompt for the user
-				    ; WriteConsole(handle, &Prompt[0], 17, &written, 0)
- 00000000  68 00000000 R	    push  offset prompt
- 00000005  E8 00000000 E	    call  charCount
- 0000000A  50			    push  eax
- 0000000B  68 00000000 R	    push  offset prompt
- 00000010  E8 00000000 E	    call  writeline
-
-				    ; Read what the user entered.
- 00000015  E8 00000000 E	    call  readline
-
-				    ; The following embeds the above code in a common routine, so the more complicated call only needs to be written once.
-				    ; writeline(&results[0], 12)
- 0000001A  A3 00000095 R	    mov   bufferAddr, eax
- 0000001F  68 0000004B R	    push  offset results
- 00000024  E8 00000000 E	    call  charCount
- 00000029  50			    push  eax
- 0000002A  68 0000004B R	    push  offset results
- 0000002F  E8 00000000 E	    call  writeline
- 00000034  FF 35 00000091 R	    push  numCharsToRead
- 0000003A  FF 35 00000095 R	    push  bufferAddr
- 00000040  E8 00000000 E	    call  writeline
-				    
- 00000045  68 00000058 R	    push  offset numberPrint
- 0000004A  E8 00000000 E	    call  charCount
- 0000004F  50			    push  eax
- 00000050  68 00000058 R	    push  offset numberPrint
- 00000055  E8 00000000 E	    call  writeline
- 0000005A  A1 0000008D R	    mov   eax, addend2
- 0000005F  8B 1D 00000089 R	    mov   ebx, addend1
- 00000065  B9 00000000		    mov   ecx, 0
-
- 0000006A			progressloop:
- 0000006A  E8 00000015		    call fprogress
- 0000006F  E8 00000010		    call fprogress
- 00000074  E8 0000000B		    call fprogress
- 00000079  E8 00000006		    call fprogress
- 0000007E  E8 00000001		    call fprogress
-
- 00000083			exit:
- 00000083  C3			    ret                                     ; Return to the main program.
-
- 00000084			fibonacci ENDP
-
- 00000084			fprogress PROC near
- 00000084			_fprogress:
- 00000084  50			    push  eax
- 00000085  03 C3		    add   eax, ebx
- 00000087  5B			    pop   ebx
- 00000088  50			    push  eax
- 00000089  53			    push  ebx
- 0000008A  50			    push  eax
- 0000008B  E8 00000000 E	    call  writeNumber
- 00000090  5B			    pop   ebx
- 00000091  58			    pop   eax
- 00000092  C3			    ret
- 00000093			fprogress ENDP
-
+ 00000000			main PROC near
+ 00000000			_main:
+ 00000000  E8 00000000 E		call initialize_console
+ 00000005  E8 00000000 E		call fibonacci
+					 ; ExitProcess(uExitCode)
+ 0000000A  6A 00		    push  0
+ 0000000C  E8 00000000 E	    call  _ExitProcess@4
+ 00000011			main ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 15:03:58
-fibonacci.asm						     Symbols 2 - 1
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 16:45:51
+main.asm						     Symbols 2 - 1
 
 
 
@@ -136,20 +53,16 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000099 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000093 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000011 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000084 Public
-  _fibonacci . . . . . . . . . .	L Near	 00000000 _TEXT	
-  progressloop . . . . . . . . .	L Near	 0000006A _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 00000083 _TEXT	
-fprogress  . . . . . . . . . . .	P Near	 00000084 _TEXT	Length= 0000000F Public
-  _fprogress . . . . . . . . . .	L Near	 00000084 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000011 Public
+  _main  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
 
 
 Symbols:
@@ -165,17 +78,9 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-addend1  . . . . . . . . . . . .	DWord	 00000089 _DATA	
-addend2  . . . . . . . . . . . .	DWord	 0000008D _DATA	
-bufferAddr . . . . . . . . . . .	DWord	 00000095 _DATA	
-charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
-numCharsToRead . . . . . . . . .	DWord	 00000091 _DATA	
-numberPrint  . . . . . . . . . .	Byte	 00000058 _DATA	
-prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-results  . . . . . . . . . . . .	Byte	 0000004B _DATA	
-writeNumber  . . . . . . . . . .	L Near	 00000000 FLAT	External
-writeline  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
+fibonacci  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+initialize_console . . . . . . .	L Near	 00000000 FLAT	External
 
 	   0 Warnings
 	   0 Errors
