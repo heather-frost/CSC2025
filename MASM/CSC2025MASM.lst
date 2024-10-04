@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/02/24 11:05:09
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/04/24 11:00:51
 fibonacci.asm						     Page 1 - 1
 
 
@@ -92,43 +92,36 @@ fibonacci.asm						     Page 1 - 1
  00000034  FF 35 00000091 R	    push  numCharsToRead
  0000003A  FF 35 00000095 R	    push  bufferAddr
  00000040  E8 00000000 E	    call  writeline
+				    
+ 00000045  68 00000058 R	    push  offset numberPrint
+ 0000004A  E8 00000000 E	    call  charCount
+ 0000004F  50			    push  eax
+ 00000050  68 00000058 R	    push  offset numberPrint
+ 00000055  E8 00000000 E	    call  writeline
 
 				    ; Try print a number
- 00000045  E8 00000001		    call fprogress
+ 0000005A  E8 00000001		    call fprogress
 
- 0000004A			exit:
- 0000004A  C3			    ret                                     ; Return to the main program.
+ 0000005F			exit:
+ 0000005F  C3			    ret                                     ; Return to the main program.
 
- 0000004B			fibonacci ENDP
+ 00000060			fibonacci ENDP
 
- 0000004B			fprogress PROC near
- 0000004B			_fprogress:
- 0000004B  68 00000058 R	push  offset numberPrint
- 00000050  E8 00000000 E	    call  charCount
- 00000055  50			    push  eax
- 00000056  68 00000058 R	    push  offset numberPrint
- 0000005B  E8 00000000 E	    call  writeline
+ 00000060			fprogress PROC near
+ 00000060			_fprogress:
  00000060  A1 00000089 R	    mov   eax, addend1
- 00000065  50			    push  eax
- 00000066  E8 00000000 E	    call  writeNumber
- 0000006B  A1 0000008D R	    mov   eax, addend2
+ 00000065  03 05 0000008D R	    add   eax, addend2
+ 0000006B  A3 0000008D R	    mov   addend2, eax
  00000070  50			    push  eax
  00000071  E8 00000000 E	    call  writeNumber
- 00000076  A1 00000089 R	    mov   eax, addend1
- 0000007B  03 05 0000008D R	    add   eax, addend2
- 00000081  A3 0000008D R	    mov   addend2, eax
- 00000086  50			    push  eax
- 00000087  E8 00000000 E	    call  writeNumber
- 0000008C  A1 0000008D R	    mov   eax, addend2
- 00000091  2B 05 00000089 R	    sub   eax, addend1
- 00000097  A3 00000089 R	    mov   addend1, eax
- 0000009C  50			    push  eax
- 0000009D  E8 00000000 E	    call  writeNumber
- 000000A2  C3			    ret
- 000000A3			fprogress ENDP
+ 00000076  A1 0000008D R	    mov   eax, addend2
+ 0000007B  2B 05 00000089 R	    sub   eax, addend1
+ 00000081  A3 00000089 R	    mov   addend1, eax
+ 00000086  C3			    ret
+ 00000087			fprogress ENDP
 
 				END
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/02/24 11:05:09
+Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/04/24 11:00:51
 fibonacci.asm						     Symbols 2 - 1
 
 
@@ -140,18 +133,18 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000099 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000A3 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000087 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004B Public
+fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000060 Public
   _fibonacci . . . . . . . . . .	L Near	 00000000 _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 0000004A _TEXT	
-fprogress  . . . . . . . . . . .	P Near	 0000004B _TEXT	Length= 00000058 Public
-  _fprogress . . . . . . . . . .	L Near	 0000004B _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 0000005F _TEXT	
+fprogress  . . . . . . . . . . .	P Near	 00000060 _TEXT	Length= 00000027 Public
+  _fprogress . . . . . . . . . .	L Near	 00000060 _TEXT	
 
 
 Symbols:
