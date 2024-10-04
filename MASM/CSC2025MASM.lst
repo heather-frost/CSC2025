@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/04/24 11:00:51
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 15:03:58
 fibonacci.asm						     Page 1 - 1
 
 
@@ -8,10 +8,6 @@ fibonacci.asm						     Page 1 - 1
 				; fibonacci counter built from start.asm
 
 				; Register names:
-				; Register names are NOT case sensitive eax and EAX are the same register
-				; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
-				;	the right most 16 bits of EAX). AL is the right-most 8 bits.
-				; Writing into AX or AL effects the right most bits of EAX.
 				;     EAX - caller saved register - usually used for communication between
 				;			caller and callee.
 				;     EBX - Callee saved register
@@ -32,7 +28,7 @@ fibonacci.asm						     Page 1 - 1
 
  00000000			.data
 
- 00000000 48 6F 77 20 6D	prompt          byte  "How many fibonacci terms would you like? Enter a number between 0 and 45: ", 0 ; ends with string terminator (NULL or 0)
+ 00000000 48 6F 77 20 6D	prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
 	   61 6E 79 20 66
 	   69 62 6F 6E 61
 	   63 63 69 20 74
@@ -44,7 +40,7 @@ fibonacci.asm						     Page 1 - 1
 	   72 20 61 20 6E
 	   75 6D 62 65 72
 	   20 62 65 74 77
-	   65 65 6E 20 30
+	   65 65 6E 20 31
 	   20 61 6E 64 20
 	   34 35 3A 20 00
  0000004B 0A 59 6F 75 20	results         byte  10,"You typed: ", 0
@@ -98,30 +94,38 @@ fibonacci.asm						     Page 1 - 1
  0000004F  50			    push  eax
  00000050  68 00000058 R	    push  offset numberPrint
  00000055  E8 00000000 E	    call  writeline
+ 0000005A  A1 0000008D R	    mov   eax, addend2
+ 0000005F  8B 1D 00000089 R	    mov   ebx, addend1
+ 00000065  B9 00000000		    mov   ecx, 0
 
-				    ; Try print a number
- 0000005A  E8 00000001		    call fprogress
+ 0000006A			progressloop:
+ 0000006A  E8 00000015		    call fprogress
+ 0000006F  E8 00000010		    call fprogress
+ 00000074  E8 0000000B		    call fprogress
+ 00000079  E8 00000006		    call fprogress
+ 0000007E  E8 00000001		    call fprogress
 
- 0000005F			exit:
- 0000005F  C3			    ret                                     ; Return to the main program.
+ 00000083			exit:
+ 00000083  C3			    ret                                     ; Return to the main program.
 
- 00000060			fibonacci ENDP
+ 00000084			fibonacci ENDP
 
- 00000060			fprogress PROC near
- 00000060			_fprogress:
- 00000060  A1 00000089 R	    mov   eax, addend1
- 00000065  03 05 0000008D R	    add   eax, addend2
- 0000006B  A3 0000008D R	    mov   addend2, eax
- 00000070  50			    push  eax
- 00000071  E8 00000000 E	    call  writeNumber
- 00000076  A1 0000008D R	    mov   eax, addend2
- 0000007B  2B 05 00000089 R	    sub   eax, addend1
- 00000081  A3 00000089 R	    mov   addend1, eax
- 00000086  C3			    ret
- 00000087			fprogress ENDP
+ 00000084			fprogress PROC near
+ 00000084			_fprogress:
+ 00000084  50			    push  eax
+ 00000085  03 C3		    add   eax, ebx
+ 00000087  5B			    pop   ebx
+ 00000088  50			    push  eax
+ 00000089  53			    push  ebx
+ 0000008A  50			    push  eax
+ 0000008B  E8 00000000 E	    call  writeNumber
+ 00000090  5B			    pop   ebx
+ 00000091  58			    pop   eax
+ 00000092  C3			    ret
+ 00000093			fprogress ENDP
 
 				END
-Microsoft (R) Macro Assembler Version 14.35.32215.0	    10/04/24 11:00:51
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/04/24 15:03:58
 fibonacci.asm						     Symbols 2 - 1
 
 
@@ -133,18 +137,19 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000099 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000087 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000093 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000060 Public
+fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000084 Public
   _fibonacci . . . . . . . . . .	L Near	 00000000 _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 0000005F _TEXT	
-fprogress  . . . . . . . . . . .	P Near	 00000060 _TEXT	Length= 00000027 Public
-  _fprogress . . . . . . . . . .	L Near	 00000060 _TEXT	
+  progressloop . . . . . . . . .	L Near	 0000006A _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 00000083 _TEXT	
+fprogress  . . . . . . . . . . .	P Near	 00000084 _TEXT	Length= 0000000F Public
+  _fprogress . . . . . . . . . .	L Near	 00000084 _TEXT	
 
 
 Symbols:

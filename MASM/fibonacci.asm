@@ -4,10 +4,6 @@
 ; fibonacci counter built from start.asm
 
 ; Register names:
-; Register names are NOT case sensitive eax and EAX are the same register
-; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
-;	the right most 16 bits of EAX). AL is the right-most 8 bits.
-; Writing into AX or AL effects the right most bits of EAX.
 ;     EAX - caller saved register - usually used for communication between
 ;			caller and callee.
 ;     EBX - Callee saved register
@@ -28,7 +24,7 @@ extern writeNumber: near
 
 .data
 
-prompt          byte  "How many fibonacci terms would you like? Enter a number between 0 and 45: ", 0 ; ends with string terminator (NULL or 0)
+prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
 results         byte  10,"You typed: ", 0
 numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 addend1         dword 1
@@ -69,8 +65,15 @@ _fibonacci:
     push  eax
     push  offset numberPrint
     call  writeline
+    mov   eax, addend2
+    mov   ebx, addend1
+    mov   ecx, 0
 
-    ; Try print a number
+progressloop:
+    call fprogress
+    call fprogress
+    call fprogress
+    call fprogress
     call fprogress
 
 exit:
@@ -80,14 +83,15 @@ fibonacci ENDP
 
 fprogress PROC near
 _fprogress:
-    mov   eax, addend1
-    add   eax, addend2
-    mov   addend2, eax
+    push  eax
+    add   eax, ebx
+    pop   ebx
+    push  eax
+    push  ebx
     push  eax
     call  writeNumber
-    mov   eax, addend2
-    sub   eax, addend1
-    mov   addend1, eax
+    pop   ebx
+    pop   eax
     ret
 fprogress ENDP
 
