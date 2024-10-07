@@ -1,0 +1,78 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\start-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:start-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\readWrite-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:readWrite-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\BuildCustomizations\\masm.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "masm.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\BuildCustomizations\\masm.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\BuildCustomizations\\masm.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\BuildCustomizations\\masm.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Microsoft\\VC\\v170\\BuildCustomizations\\masm.targets",
+              "ViewState": "AgIAADYAAAAAAAAAAAAMwEUAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2024-10-04T16:37:48.586Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "start-R.asm",
+              "DocumentMoniker": "C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\start-R.asm",
+              "RelativeDocumentMoniker": "start-R.asm",
+              "ToolTip": "C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\start-R.asm*",
+              "RelativeToolTip": "start-R.asm*",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAEsAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-04T15:54:56.729Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "readWrite-R.asm",
+              "DocumentMoniker": "C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\readWrite-R.asm",
+              "RelativeDocumentMoniker": "readWrite-R.asm",
+              "ToolTip": "C:\\Users\\s00026361\\source\\repos\\ReadWriteRecurse\\readWrite-R.asm",
+              "RelativeToolTip": "readWrite-R.asm",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAMwDEAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-04T15:49:37.776Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
