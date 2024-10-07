@@ -51,7 +51,9 @@ _fibonacci:
     mov   eax,0
 ASCIIloop:
     mov  cl,[ebx]                   ; Look at the character in the string
-    cmp  ecx,13                      ; check for end of string.
+    cmp  ecx,13                     ; check for carriage return.
+    je numberGet
+    cmp  ecx,10                     ; check for line feed.
     je numberGet
     cmp  ecx,0                      ; check for end of string.
     je numberGet
