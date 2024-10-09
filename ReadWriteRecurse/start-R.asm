@@ -22,6 +22,16 @@
 ;     ESP - Callee Saved register - stack pointer
 ;     EBP - Callee Saved register - base pointer.386P
 
+;ASSIGNMENT
+;   user input: number to perform factorial operation on
+;   Convert input from ASCII to integer value
+;   Call a routine to calculate factorial result
+;   	must be recursive
+;   Display result
+;three files attached as example
+;	genNumber is now recursive
+;		works fine, probably could be streamlined
+
 .386P
 .model flat
 
@@ -55,6 +65,42 @@ _start:
     call  writeline
     ; Read what the user entered.
     call  readline
+    
+    ;-----------------------------------------------------------------------
+    ;convert user entry to number
+    mov   bufferAddr, eax
+    mov   ebx, bufferAddr
+    mov   ecx,0
+    mov   eax,0
+ASCIIloop:
+    mov  cl,[ebx]                   ; Look at the character in the string
+    cmp  ecx,13                     ; check for carriage return.
+    je numberGet
+    cmp  ecx,10                     ; check for line feed.
+    je numberGet
+    cmp  ecx,0                      ; check for end of string.
+    je numberGet
+    sub  cl,'0'
+    imul eax,10
+    add  eax,ecx
+    inc  ebx                        ; go to next letter
+    jmp  ASCIIloop
+numberGet:
+    push eax
+
+    ; Print numberPrint dialog
+    push  offset numberPrint
+    call  charCount
+    push  eax
+    push  offset numberPrint
+    call  writeline
+
+    ;prep registers for addloop
+    pop ecx
+    mov   eax, 2
+    mov   ebx, 1
+    ;-----------------------------------------------------------------------
+
     ; The following embeds the above code in a common routine, so the more complicated call only needs to be written once.
     ; writeline(&results[0], 12)
     mov   bufferAddr, eax
@@ -62,7 +108,7 @@ _start:
     call  charCount
     push  eax
     push  offset results
-    call  writeline
+     call  writeline
     push  numCharsToRead
     push  bufferAddr
     call  writeline
@@ -82,8 +128,11 @@ _start:
     push  eax
     push  offset numberBuffer
     call  writeline                 ; And it is time to exit.
-exit:
-    ret                             ; Return to the main program.
 
+
+
+
+exit:
+    ret ; Return to the main program.
 start ENDP
 END

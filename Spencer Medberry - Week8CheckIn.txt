@@ -1,0 +1,19 @@
+1. An x86 processor has 4 general-purpose registers.
+
+2. The general-purpose registers of an x86 processor are named EAX EBX ECX EDX
+
+3. The two most important special-purpose registers are ESI and EDI.
+
+4. The ways to address the EAX register are AX, which includes the least significant 2 bytes, AH, which includes the most significant byte of AX, and AL which includes the least significant byte.
+
+5. It may be convenient to use the smaller parts of EAX when dealing with data smaller than 32 bits like 1 byte ASCII characters.
+
+6. The registers used on a "div" command are EDX and EAX. The starting registers are the combination EDX:EAX. The quotient is placed in EAX and the remainder in EDX.
+
+7. In an "idiv" command, EDX and EAX are combined to provide the dividend. After the operation is performed the quotient is stored in EAX and the remainder in EDX.
+
+8. When pushes and pops do not match your data doesn't end up in the right location: it can be left on the stack if there are insufficient pops and garbage may be assigned if there are too many.
+
+9. To reference a function named in a different file you need to append it with "near".
+
+10. It is important to see the register values while you are debugging to understand what values are being manipulated at any given point.
