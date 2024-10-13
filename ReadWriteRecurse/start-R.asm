@@ -3,20 +3,9 @@
 ; 12 October 2024
 
 ; Register usage:
-;     EAX - readWrite procedure communication
+;     EAX - readWrite procedure communication, factorial routine result
 ;     EBX - integer user input result for passing to factorial routine
-;     ECX - helper register: char storage during ASCII conversion
-
-;ASSIGNMENT
-;   user input: number to perform factorial operation on
-;   Convert input from ASCII to integer value
-;   Call a routine to calculate factorial result
-;   	must be recursive
-;   Display result
-;three files attached as example
-;	genNumber is now recursive
-;		works fine, probably could be streamlined
-
+;     ECX - char storage during ASCII conversion
 
 .386P
 .model flat
@@ -34,16 +23,25 @@ numberBuffer    dword 1024
 
 .code
 
+;; Call start() - no parameters, no return value
 start PROC near
 _start:
     ; Display prompt for user input
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset prompt
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset prompt
     call  writeline
 
     ; ask console for user input
+        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
     call  readline
     ; user input stored in eax
 
@@ -66,21 +64,39 @@ ASCIIloop:
 numberGet:
     push ebx
 
-    ; print input number
+    ; print input number for factorialDialog to reference
     push  offset numberBuffer        ; Supplied buffer where number is written.call  writeline
     push  ebx
+        ;; Call genNumber(numberBuffer, value)
+        ;; Parameters: numberBuffer
+        ;;             value
+        ;; Return ASCII number
     call  genNumber
     pop   eax                        ; PARAMETER MUST BE REMOVED HERE TO EXIT PROPERLY.
     pop   eax                        ; Remove second parameter.
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset numberBuffer        ; Supplied buffer where number is written.
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset numberBuffer
     call  writeline                 ; And it is time to exit.
 
     ; print factorialDialog
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset factorialDialog
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset factorialDialog
     call  writeline
@@ -89,33 +105,45 @@ numberGet:
     pop ebx
     mov eax, 1
 
-    ;FACTORIAL ROUTINE HERE
+        ;; Call factorial() - No Parameters, no return value
     call factorial
-    mov ebx, eax
 
     ;print result
+        ;; Call genNumber(numberBuffer, value)
+        ;; Parameters: numberBuffer
+        ;;             value
+        ;; Return ASCII number
     push  offset numberBuffer        ; Supplied buffer where number is written.call  writeline
-    push  ebx
+    push  eax
     call  genNumber
     pop   eax                        ; PARAMETER MUST BE REMOVED HERE TO EXIT PROPERLY.
     pop   eax                        ; Remove second parameter.
 
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset numberBuffer        ; Supplied buffer where number is written.
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset numberBuffer
-    call  writeline                 ; And it is time to exit.
+    call  writeline
 
 exit:
     ret   ; Return to the main program.
 start ENDP
 
+;; Call factorial() - No Parameters, no return value
 factorial PROC near
 _factorial:
     cmp ebx, 1
     jle factorialExit
     imul eax, ebx
     dec ebx
+        ;; Call factorial() - No Parameters, no return value
     call factorial
 factorialExit:
     ret

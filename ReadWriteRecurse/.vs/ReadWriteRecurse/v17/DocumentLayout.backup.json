@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:start-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\main-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:main-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\readWrite-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:readWrite-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\main-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{865E0376-015F-4D88-924D-8AEB7E4FA005}|ReadWriteRecurse.vcxproj|solutionrelative:main-R.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +34,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "main-R.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\main-R.asm",
               "RelativeDocumentMoniker": "main-R.asm",
@@ -42,8 +42,7 @@
               "RelativeToolTip": "main-R.asm",
               "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-10-12T23:04:42.569Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-12T23:04:42.569Z"
             },
             {
               "$type": "Document",
@@ -53,20 +52,20 @@
               "RelativeDocumentMoniker": "start-R.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\start-R.asm",
               "RelativeToolTip": "start-R.asm",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAAFwAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAkwIEAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-10-04T15:54:56.729Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "readWrite-R.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\readWrite-R.asm",
               "RelativeDocumentMoniker": "readWrite-R.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\ReadWriteRecurse\\readWrite-R.asm",
               "RelativeToolTip": "readWrite-R.asm",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAAAEsAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAAAKkAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-10-04T15:49:37.776Z",
               "EditorCaption": ""
