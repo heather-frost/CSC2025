@@ -18,11 +18,10 @@ extern writeNumber: near
 
 .data
 
-prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
-numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-results         byte  10,"The number of terms that will be displayed is: ", 0
-numCharsToRead  dword 1024
-bufferAddr      dword ?
+; both end with 0 to terminate the string
+prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
+; beginning with 10 sends a line feed character before the text
+fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 
 .code
 
@@ -68,18 +67,18 @@ numberGet:
     push ebx
     
 
-    ; Print numberPrint dialog
+    ; Print fibonacciDialog dialog
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax
-    push  offset numberPrint
+    push  offset fibonacciDialog
     call  charCount
         ;; Call writeline(addr, chars) - push parameter in reverse order
         ;; Parameters: addr is address of buffer = &addr[0]
         ;;             chars is the character count in the buffer
         ;; Returns nothing
     push  eax
-    push  offset numberPrint
+    push  offset fibonacciDialog
     call  writeline
 
     ;prep registers for addloop
@@ -87,6 +86,7 @@ numberGet:
     mov   eax, 2
     mov   ecx, 1
 
+    ;addloop adds eax and ecx to get the next term in the fibonacci sequence and also prints it to the console
 addloop:
     ;add function
     push  eax
@@ -116,6 +116,6 @@ addloop:
     jg  addloop
 
 exit:
-    ret                                     ; Return to the main program.
+    ret     ; Return to the main program.
 fibonacci ENDP
 END

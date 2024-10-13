@@ -42,8 +42,7 @@
               "RelativeToolTip": "readWrite.asm",
               "ViewState": "AgIAACEAAAAAAAAAAAAAADUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.345Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-27T17:38:40.345Z"
             },
             {
               "$type": "Document",
@@ -53,7 +52,7 @@
               "RelativeDocumentMoniker": "fibonacci.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
               "RelativeToolTip": "fibonacci.asm",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAABwAAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHYAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-09-27T17:40:34.43Z",
               "EditorCaption": ""
@@ -68,8 +67,7 @@
               "RelativeToolTip": "main.asm",
               "ViewState": "AgIAABgAAAAAAAAAAAAAACYAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.271Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-27T17:38:40.271Z"
             }
           ]
         }

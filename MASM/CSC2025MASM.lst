@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 09:57:35
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 10:15:19
 fibonacci.asm						     Page 1 - 1
 
 
@@ -22,7 +22,8 @@ fibonacci.asm						     Page 1 - 1
 
  00000000			.data
 
- 00000000 48 6F 77 20 6D	prompt          byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0 ; ends with string terminator (NULL or 0)
+				; both end with 0 to terminate the string
+ 00000000 48 6F 77 20 6D	prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
 	   61 6E 79 20 66
 	   69 62 6F 6E 61
 	   63 63 69 20 74
@@ -37,7 +38,8 @@ fibonacci.asm						     Page 1 - 1
 	   65 65 6E 20 31
 	   20 61 6E 64 20
 	   34 35 3A 20 00
- 0000004B 0A 53 74 61 72	numberPrint     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+				; beginning with 10 sends a line feed character before the text
+ 0000004B 0A 53 74 61 72	fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 	   74 69 6E 67 20
 	   77 69 74 68 20
 	   31 20 61 6E 64
@@ -47,21 +49,10 @@ fibonacci.asm						     Page 1 - 1
 	   72 6F 64 75 63
 	   65 64 20 61 72
 	   65 3A 20 00
- 0000007C 0A 54 68 65 20	results         byte  10,"The number of terms that will be displayed is: ", 0
-	   6E 75 6D 62 65
-	   72 20 6F 66 20
-	   74 65 72 6D 73
-	   20 74 68 61 74
-	   20 77 69 6C 6C
-	   20 62 65 20 64
-	   69 73 70 6C 61
-	   79 65 64 20 69
-	   73 3A 20 00
- 000000AD 00000400		numCharsToRead  dword 1024
- 000000B1 00000000		bufferAddr      dword ?
 
  00000000			.code
 
+				;; Call fibonacci() - No Parameters, no return value
  00000000			fibonacci PROC near
  00000000			_fibonacci:
 				    ; Display prompt for user input
@@ -103,18 +94,18 @@ fibonacci.asm						     Page 1 - 1
  00000040  53			    push ebx
 				    
 
-				    ; Print numberPrint dialog
+				    ; Print fibonacciDialog dialog
 				        ;; Call charCount(addr)
 				        ;; Parameters: addr is address of buffer = &addr[0]
 				        ;; Returns character count in eax
- 00000041  68 0000004B R	    push  offset numberPrint
+ 00000041  68 0000004B R	    push  offset fibonacciDialog
  00000046  E8 00000000 E	    call  charCount
 				        ;; Call writeline(addr, chars) - push parameter in reverse order
 				        ;; Parameters: addr is address of buffer = &addr[0]
 				        ;;             chars is the character count in the buffer
 				        ;; Returns nothing
  0000004B  50			    push  eax
- 0000004C  68 0000004B R	    push  offset numberPrint
+ 0000004C  68 0000004B R	    push  offset fibonacciDialog
  00000051  E8 00000000 E	    call  writeline
 
 				    ;prep registers for addloop
@@ -122,6 +113,7 @@ fibonacci.asm						     Page 1 - 1
  00000057  B8 00000002		    mov   eax, 2
  0000005C  B9 00000001		    mov   ecx, 1
 
+				    ;addloop adds eax and ecx to get the next term in the fibonacci sequence and also prints it to the console
  00000061			addloop:
 				    ;add function
  00000061  50			    push  eax
@@ -151,10 +143,10 @@ fibonacci.asm						     Page 1 - 1
  00000075  7F EA		    jg  addloop
 
  00000077			exit:
- 00000077  C3			    ret                                     ; Return to the main program.
+ 00000077  C3			    ret     ; Return to the main program.
  00000078			fibonacci ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 09:57:35
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 10:15:19
 fibonacci.asm						     Symbols 2 - 1
 
 
@@ -165,7 +157,7 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 000000B5 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000007C Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000078 Para	  Public  'CODE'	
 
 
@@ -194,13 +186,10 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-bufferAddr . . . . . . . . . . .	DWord	 000000B1 _DATA	
 charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
-numCharsToRead . . . . . . . . .	DWord	 000000AD _DATA	
-numberPrint  . . . . . . . . . .	Byte	 0000004B _DATA	
+fibonacciDialog  . . . . . . . .	Byte	 0000004B _DATA	
 prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-results  . . . . . . . . . . . .	Byte	 0000007C _DATA	
 writeNumber  . . . . . . . . . .	L Near	 00000000 FLAT	External
 writeline  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 
