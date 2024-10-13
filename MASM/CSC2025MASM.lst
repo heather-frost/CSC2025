@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/12/24 16:57:25
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 09:57:35
 fibonacci.asm						     Page 1 - 1
 
 
@@ -6,7 +6,7 @@ fibonacci.asm						     Page 1 - 1
 				; Spencer Medberry
 				; 27 September 2024
 				; fibonacci counter built from start.asm
-				; SM updated based on feedback 10/12/2024
+				; SAM updated based on feedback 10/12/2024
 
 				; Register usage:
 				;     EAX - readWrite procedure communication, fibonacci sum
@@ -65,13 +65,21 @@ fibonacci.asm						     Page 1 - 1
  00000000			fibonacci PROC near
  00000000			_fibonacci:
 				    ; Display prompt for user input
+				        ;; Call charCount(addr)
+				        ;; Parameters: addr is address of buffer = &addr[0]
+				        ;; Returns character count in eax
  00000000  68 00000000 R	    push  offset prompt
  00000005  E8 00000000 E	    call  charCount
+				        ;; Call writeline(addr, chars) - push parameter in reverse order
+				        ;; Parameters: addr is address of buffer = &addr[0]
+				        ;;             chars is the character count in the buffer
+				        ;; Returns nothing
  0000000A  50			    push  eax
  0000000B  68 00000000 R	    push  offset prompt
  00000010  E8 00000000 E	    call  writeline
 
 				    ; ask console for user input
+				        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
  00000015  E8 00000000 E	    call  readline
 				    ; user input stored in eax
 				    
@@ -96,8 +104,15 @@ fibonacci.asm						     Page 1 - 1
 				    
 
 				    ; Print numberPrint dialog
+				        ;; Call charCount(addr)
+				        ;; Parameters: addr is address of buffer = &addr[0]
+				        ;; Returns character count in eax
  00000041  68 0000004B R	    push  offset numberPrint
  00000046  E8 00000000 E	    call  charCount
+				        ;; Call writeline(addr, chars) - push parameter in reverse order
+				        ;; Parameters: addr is address of buffer = &addr[0]
+				        ;;             chars is the character count in the buffer
+				        ;; Returns nothing
  0000004B  50			    push  eax
  0000004C  68 0000004B R	    push  offset numberPrint
  00000051  E8 00000000 E	    call  writeline
@@ -119,6 +134,9 @@ fibonacci.asm						     Page 1 - 1
  00000067  53			    push  ebx
 
 				    ;writeNumber
+				        ;; Call writeNumber(number) - print the ASCII value of a number.
+				        ;; Parameter: number is number to be converted to Ascii and printed.
+				        ;; Returns nothing
  00000068  50			    push  eax
  00000069  E8 00000000 E	    call  writeNumber
 
@@ -136,7 +154,7 @@ fibonacci.asm						     Page 1 - 1
  00000077  C3			    ret                                     ; Return to the main program.
  00000078			fibonacci ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/12/24 16:57:25
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/13/24 09:57:35
 fibonacci.asm						     Symbols 2 - 1
 
 

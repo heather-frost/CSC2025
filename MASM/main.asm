@@ -29,11 +29,14 @@ extern fibonacci: near
 
 .code
 
+;; Call main() - No Parameters, no return value
 main PROC near
 _main:
+		;; Call initialize_console() - No Parameters, no return value
 	call initialize_console
+		;; Call fibonacci() - No Parameters, no return value
 	call fibonacci
-	 ; ExitProcess(uExitCode)
+		;; Call ExitProcess(uExitCode)
     push  0
     call  _ExitProcess@4
 main ENDP

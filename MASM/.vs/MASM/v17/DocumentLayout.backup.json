@@ -22,11 +22,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
             },
             {
               "$type": "Document",
@@ -36,7 +40,7 @@
               "RelativeDocumentMoniker": "readWrite.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\readWrite.asm",
               "RelativeToolTip": "readWrite.asm",
-              "ViewState": "AgIAAKEAAAAAAAAAAAAAAI8AAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAHsAAAAAAAAAAAAAAIYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-09-27T17:38:40.345Z",
               "EditorCaption": ""
@@ -49,7 +53,7 @@
               "RelativeDocumentMoniker": "fibonacci.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\fibonacci.asm",
               "RelativeToolTip": "fibonacci.asm",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADkAAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAAAGYAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-09-27T17:40:34.43Z",
               "EditorCaption": ""
@@ -62,10 +66,9 @@
               "RelativeDocumentMoniker": "main.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\MASM\\main.asm",
               "RelativeToolTip": "main.asm",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAACQAAAALAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.271Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-27T17:38:40.271Z"
             }
           ]
         }

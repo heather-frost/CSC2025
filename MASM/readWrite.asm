@@ -50,8 +50,9 @@ numCharsRead    dword ?                                   ; Unset or uninitializ
 
 .code
 
-; Initialize Input and Output handles so you only have to do that once.
-; This is your first assembly routine
+;; Call initialize_console() - No Parameters, no return value
+;; Initialize Input and Output handles so you only have to do that once.
+;; This is your first assembly routine
 initialize_console PROC near
 _initialize_console:
 
@@ -59,19 +60,15 @@ _initialize_console:
     push    OUTPUT_FLAG
     call    _GetStdHandle@4
     mov     outputHandle, eax
-
     ; handle = GetStdHandle(-10)
     push  INPUT_FLAG
     call  _GetStdHandle@4
     mov   inputHandle, eax
     ret
-
 initialize_console ENDP
 
-
-
-
-; Now the read/write handles are set, read a line
+;; Call readline() - No Parameters, Returns ptr to buffer in eax
+;; Now the read/write handles are set, read a line
 readline PROC near
 _readline: 
       ; ReadConsole(handle, &buffer, numCharToRead, numCharsRead, null)
@@ -85,11 +82,11 @@ _readline:
     ret
 readline ENDP
 
-
-
-
-; All strings need to end with a NULL (0). So I do not have to manually count the number of
-;   characters in the line, I wrote this routine.
+;; Call charCount(addr)
+;; Parameters: addr is address of buffer = &addr[0]
+;; Returns character count in eax
+;; All strings need to end with a NULL (0). So I do not have to manually count the number of
+;;   characters in the line, I wrote this routine.
 charCount PROC near
 _charCount:
     pop  edx                        ; Save return address
@@ -100,7 +97,7 @@ _charCount:
 _countLoop:
     mov  cl,[ebx]                   ; Look at the character in the string
     cmp  ecx,0                      ; check for end of string.
-    je   _endCount
+    jle  _endCount
     inc  eax                        ; Up the count by one
     inc  ebx                        ; go to next letter
     jmp  _countLoop
@@ -108,11 +105,12 @@ _endCount:
     ret                             ;Return with EAX containing character count
 charCount ENDP
 
-
-
-
-; For all routines, the last item to be pushed on the stack is the return address, save it to a register
-; then save any other expected parameters in registers, then restore the return address to the stack.
+;; Call writeline(addr, chars) - push parameter in reverse order
+;; Parameters: addr is address of buffer = &addr[0]
+;;             chars is the character count in the buffer
+;; Returns nothing
+;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+;; then save any other expected parameters in registers, then restore the return address to the stack.
 writeline PROC near
 _writeline:
     pop   edx                        ; pop return address from the stack into EDX
@@ -129,19 +127,19 @@ _writeline:
     push   outputHandle
     call   _WriteConsoleA@20
     ret
-
 writeline ENDP
 
-
-
-
-; For all routines, the last item to be pushed on the stack is the return address, save it to a register
-; then save any other expected parameters in registers, then restore the return address to the stack.
+;; Call writeNumber(number) - print the ASCII value of a number.
+;; Parameter: number is number to be converted to Ascii and printed.
+;; Returns nothing
+;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+;; then save any other expected parameters in registers, then restore the return address to the stack.
 writeNumber PROC near
 _writeNumber:
     pop   edx                        ; pop return address from the stack into EDX
     pop   eax                        ; Pop the number to be written.
     push  edx                        ; Restore return address to the stack
+    push  esi                        ; Preserve for the caller
     mov   ecx, 10                    ; Set the divisor to ten
     mov   esi, 0                     ; Count number of numbers written
     mov   ebx, offset numberBuffer   ; Save the start of the write buffer
@@ -173,6 +171,7 @@ numExit:
     push  eax
     push  offset numberBuffer
     call  writeline
+    pop   esi                        ; Restore for the user.
     ret
     
 writeNumber ENDP

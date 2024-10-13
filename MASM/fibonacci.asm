@@ -26,16 +26,25 @@ bufferAddr      dword ?
 
 .code
 
+;; Call fibonacci() - No Parameters, no return value
 fibonacci PROC near
 _fibonacci:
     ; Display prompt for user input
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset prompt
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset prompt
     call  writeline
 
     ; ask console for user input
+        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
     call  readline
     ; user input stored in eax
     
@@ -60,8 +69,15 @@ numberGet:
     
 
     ; Print numberPrint dialog
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
     push  offset numberPrint
     call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
     push  eax
     push  offset numberPrint
     call  writeline
@@ -83,6 +99,9 @@ addloop:
     push  ebx
 
     ;writeNumber
+        ;; Call writeNumber(number) - print the ASCII value of a number.
+        ;; Parameter: number is number to be converted to Ascii and printed.
+        ;; Returns nothing
     push  eax
     call  writeNumber
 
