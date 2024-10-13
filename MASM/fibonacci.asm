@@ -2,16 +2,12 @@
 ; Spencer Medberry
 ; 27 September 2024
 ; fibonacci counter built from start.asm
+; SAM updated based on feedback 10/12/2024
 
-; Register names:
-;     EAX - Caller saved register - used for addend
-;     EBX - Caller saved register - used for sum
-;     ECX - Caller saved register - Counter register 
-;     EDX - Caller saved register - data
-;     ESI - Callee Saved register - Source Index
-;     EDI - Callee Saved register - Destination Index
-;     ESP - Callee Saved register - stack pointer
-;     EBP - Callee Saved register - base pointer.386P
+; Register usage:
+;     EAX - readWrite procedure communication, fibonacci sum
+;     EBX - integer user input result for term counting
+;     ECX - helper register: char storage during ASCII conversion, lesser fibonacci addend
 
 .model flat
 
@@ -30,27 +26,24 @@ bufferAddr      dword ?
 
 .code
 
-; Library calls used for input from and output to the console; This is the entry procedure that does all of the testing.
 fibonacci PROC near
 _fibonacci:
-    ; Type a prompt for the user
-    ; WriteConsole(handle, &Prompt[0], 17, &written, 0)
+    ; Display prompt for user input
     push  offset prompt
     call  charCount
     push  eax
     push  offset prompt
     call  writeline
 
-    ; Read what the user entered.
+    ; ask console for user input
     call  readline
+    ; user input stored in eax
     
-    ;convert user entry to number
-    mov   bufferAddr, eax
-    mov   ebx, bufferAddr
+    ;convert user input from ASCII to integer
     mov   ecx,0
-    mov   eax,0
+    mov   ebx,0
 ASCIIloop:
-    mov  cl,[ebx]                   ; Look at the character in the string
+    mov  cl,[eax]                   ; Look at the character in the string
     cmp  ecx,13                     ; check for carriage return.
     je numberGet
     cmp  ecx,10                     ; check for line feed.
@@ -58,12 +51,13 @@ ASCIIloop:
     cmp  ecx,0                      ; check for end of string.
     je numberGet
     sub  cl,'0'
-    imul eax,10
-    add  eax,ecx
-    inc  ebx                        ; go to next letter
+    imul ebx,10
+    add  ebx,ecx
+    inc  eax                        ; go to next letter
     jmp  ASCIIloop
 numberGet:
-    push eax
+    push ebx
+    
 
     ; Print numberPrint dialog
     push  offset numberPrint
@@ -73,34 +67,33 @@ numberGet:
     call  writeline
 
     ;prep registers for addloop
-    pop ecx
+    pop ebx
     mov   eax, 2
-    mov   ebx, 1
-;    mov   ecx, 10
+    mov   ecx, 1
 
 addloop:
     ;add function
     push  eax
-    add   eax, ebx
-    pop   ebx
+    add   eax, ecx
+    pop   ecx
 
     ;store registers
     push  eax
-    push  ebx
     push  ecx
+    push  ebx
 
     ;writeNumber
     push  eax
     call  writeNumber
 
     ;retrieve registers
-    pop   ecx
     pop   ebx
+    pop   ecx
     pop   eax
 
     ;loopy bit
-    dec ecx
-    cmp ecx,0
+    dec ebx
+    cmp ebx,0
     jg  addloop
 
 exit:
