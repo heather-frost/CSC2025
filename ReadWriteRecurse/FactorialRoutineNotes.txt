@@ -1,0 +1,30 @@
+    ;FACTORIAL ROUTINE HERE
+    push ebx
+    push eax
+    call factorial
+    pop eax
+-----------------------------------------------------------------------------------
+;; Call factorial(multiplicand, initialValue)
+;; Parameters: multiplicand starts as 1 and becomes the result
+;;             initialValue is the number being operated upon and serves as an iteration tracker through decrementation
+;; Returns factorial result
+factorial PROC near
+_factorial:
+    pop edx
+    pop eax     ;multiplicand and result
+    pop ebx     ;initial or decremented value
+    cmp ebx, 1
+    jle factorialExit
+    imul eax, ebx
+    dec ebx
+    push ebx
+    push eax
+    call factorial
+    ret
+factorialExit:
+    push eax
+    push edx
+    ret
+factorial ENDP
+
+END
