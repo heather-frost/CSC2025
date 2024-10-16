@@ -22,7 +22,9 @@ extern writeNumber: near
 prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
 ; beginning with 10 sends a line feed character before the text
 fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-termSizeErrorMsg       byte  "Please enter a term between 1 and 45.",10,10,0
+termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
+finalTerm           byte  10,10,"Term ",0
+finalDialog         byte  "in this Fibonacci sequence is: "
 
 .code
 
@@ -90,6 +92,7 @@ numberGet:
     pop ebx
     mov   eax, 2
     mov   ecx, 1
+    push ebx
 
     ;addloop adds eax and ecx to get the next term in the fibonacci sequence and also prints it to the console
 addloop:
@@ -119,6 +122,45 @@ addloop:
     dec ebx
     cmp ebx,0
     jg  addloop
+;End addloop
+
+;Ending dialog
+    pop ebx
+    push eax
+    push ebx
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset finalTerm
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset finalTerm
+    call  writeline
+        ;; Call writeNumber(number) - print the ASCII value of a number.
+        ;; Parameter: number is number to be converted to Ascii and printed.
+        ;; Returns nothing
+    call  writeNumber
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset finalDialog
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset finalDialog
+    call  writeline
+        ;; Call writeNumber(number) - print the ASCII value of a number.
+        ;; Parameter: number is number to be converted to Ascii and printed.
+        ;; Returns nothing
+    call  writeNumber
+
 
 exit:
     ret     ; Return to the main program.
