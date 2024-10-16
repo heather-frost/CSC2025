@@ -22,6 +22,7 @@ extern writeNumber: near
 prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
 ; beginning with 10 sends a line feed character before the text
 fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+termSizeErrorMsg       byte  "Please enter a term between 1 and 45.",10,10,0
 
 .code
 
@@ -64,6 +65,10 @@ ASCIIloop:
     inc  eax                        ; go to next letter
     jmp  ASCIIloop
 numberGet:
+    cmp ebx,45
+    jg termSizeError
+    cmp ebx,1
+    jl termSizeError
     push ebx
     
 
@@ -117,5 +122,23 @@ addloop:
 
 exit:
     ret     ; Return to the main program.
+
+termSizeError:
+    ; Print termSizeErrorMsg
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset termSizeErrorMsg
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset termSizeErrorMsg
+    call  writeline
+    jmp _fibonacci
+; End termSizeError
+    
 fibonacci ENDP
 END
