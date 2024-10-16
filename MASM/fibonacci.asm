@@ -2,7 +2,8 @@
 ; Spencer Medberry
 ; 27 September 2024
 ; fibonacci counter built from start.asm
-; SAM updated based on feedback 10/12/2024
+; Revised: SAM 10/12/2024 updated based on feedback
+; Revised: SAM 10/16/2024 added input checking and final dialog
 
 ; Register usage:
 ;     EAX - readWrite procedure communication, fibonacci sum
@@ -23,8 +24,8 @@ prompt              byte  "How many fibonacci terms would you like? Enter a numb
 ; beginning with 10 sends a line feed character before the text
 fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
-finalTerm           byte  10,10,"Term ",0
-finalDialog         byte  "in this Fibonacci sequence is: "
+finalTerm           byte  10,10,"The value of term ",0
+finalDialog         byte  "is "
 
 .code
 
@@ -126,8 +127,8 @@ addloop:
 
 ;Ending dialog
     pop ebx
-    push eax
-    push ebx
+    push eax    ;2nd writeNumber parameter
+    push ebx    ;1st writeNumber parameter
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax

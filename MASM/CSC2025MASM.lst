@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:51:05
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:53:54
 fibonacci.asm						     Page 1 - 1
 
 
@@ -57,15 +57,12 @@ fibonacci.asm						     Page 1 - 1
 	   65 6E 20 31 20
 	   61 6E 64 20 34
 	   35 2E 0A 0A 00
- 000000A4 0A 0A 54 65 72	finalTerm           byte  10,10,"Term ",0
-	   6D 20 00
- 000000AC 69 6E 20 74 68	finalDialog         byte  "in this Fibonacci sequence is: "
-	   69 73 20 46 69
-	   62 6F 6E 61 63
-	   63 69 20 73 65
-	   71 75 65 6E 63
-	   65 20 69 73 3A
-	   20
+ 000000A4 0A 0A 54 68 65	finalTerm           byte  10,10,"The value of term ",0
+	   20 76 61 6C 75
+	   65 20 6F 66 20
+	   74 65 72 6D 20
+	   00
+ 000000B9 69 73 20		finalDialog         byte  "is "
 
  00000000			.code
 
@@ -167,8 +164,8 @@ fibonacci.asm						     Page 1 - 1
 
 				;Ending dialog
  00000082  5B			    pop ebx
- 00000083  50			    push eax
- 00000084  53			    push ebx
+ 00000083  50			    push eax    ;2nd writeNumber parameter
+ 00000084  53			    push ebx    ;1st writeNumber parameter
 				        ;; Call charCount(addr)
 				        ;; Parameters: addr is address of buffer = &addr[0]
 				        ;; Returns character count in eax
@@ -188,14 +185,14 @@ fibonacci.asm						     Page 1 - 1
 				        ;; Call charCount(addr)
 				        ;; Parameters: addr is address of buffer = &addr[0]
 				        ;; Returns character count in eax
- 0000009F  68 000000AC R	    push  offset finalDialog
+ 0000009F  68 000000B9 R	    push  offset finalDialog
  000000A4  E8 00000000 E	    call  charCount
 				        ;; Call writeline(addr, chars) - push parameter in reverse order
 				        ;; Parameters: addr is address of buffer = &addr[0]
 				        ;;             chars is the character count in the buffer
 				        ;; Returns nothing
  000000A9  50			    push  eax
- 000000AA  68 000000AC R	    push  offset finalDialog
+ 000000AA  68 000000B9 R	    push  offset finalDialog
  000000AF  E8 00000000 E	    call  writeline
 				        ;; Call writeNumber(number) - print the ASCII value of a number.
 				        ;; Parameter: number is number to be converted to Ascii and printed.
@@ -225,7 +222,7 @@ fibonacci.asm						     Page 1 - 1
 				    
  000000D4			fibonacci ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:51:05
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:53:54
 fibonacci.asm						     Symbols 2 - 1
 
 
@@ -236,7 +233,7 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 000000CB Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000BC Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 000000D4 Para	  Public  'CODE'	
 
 
@@ -268,7 +265,7 @@ Symbols:
 @stack . . . . . . . . . . . . .	Text   	 FLAT
 charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 fibonacciDialog  . . . . . . . .	Byte	 0000004B _DATA	
-finalDialog  . . . . . . . . . .	Byte	 000000AC _DATA	
+finalDialog  . . . . . . . . . .	Byte	 000000B9 _DATA	
 finalTerm  . . . . . . . . . . .	Byte	 000000A4 _DATA	
 prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
