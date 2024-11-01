@@ -133,7 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <MASM Include="fibonacci.asm" />
+    <MASM Include="gameLoop.asm" />
     <MASM Include="main.asm" />
     <MASM Include="readWrite.asm" />
   </ItemGroup>

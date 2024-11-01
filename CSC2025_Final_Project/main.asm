@@ -7,6 +7,7 @@
 ; Revised: WWC 25 April 2024 Split out the console control into second file.
 ; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
 ; Revised; SAM 04 October 2024 tweaked to work with fibonacci.asm instead of start.asm
+; Reivsed: SAM 01 November 2024 adapted for final project
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
 ; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is the right most 16 bits of EAX). AL is the right-most 8 bits.
@@ -25,7 +26,7 @@
 .model flat
 extern  _ExitProcess@4: near
 extern initialize_console: near
-extern fibonacci: near
+extern gameLoop: near
 
 .code
 
@@ -34,8 +35,8 @@ main PROC near
 _main:
 		;; Call initialize_console() - No Parameters, no return value
 	call initialize_console
-		;; Call fibonacci() - No Parameters, no return value
-	call fibonacci
+		;; Call gameLoop() - No Parameters, no return value
+	call gameLoop
 		;; Call ExitProcess(uExitCode)
     push  0
     call  _ExitProcess@4

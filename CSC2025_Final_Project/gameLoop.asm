@@ -1,14 +1,12 @@
 ; Main Console program
 ; Spencer Medberry
-; 27 September 2024
-; fibonacci counter built from start.asm
-; Revised: SAM 10/12/2024 updated based on feedback
-; Revised: SAM 10/16/2024 added input checking and final dialog
+; 1 November 2024
+; gameLoop adapted from fibonacci counter
 
 ; Register usage:
-;     EAX - readWrite procedure communication, fibonacci sum
+;     EAX - readWrite procedure communication
 ;     EBX - integer user input result for term counting
-;     ECX - helper register: char storage during ASCII conversion, lesser fibonacci addend
+;     ECX - helper register: char storage during ASCII conversion
 
 .model flat
 
@@ -20,18 +18,18 @@ extern writeNumber: near
 .data
 
 ; both end with 0 to terminate the string
-prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
+prompt              byte  "Opening gameLoop prompt: Enter a number between 1 and 45: ", 0
 ; beginning with 10 sends a line feed character before the text
-fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
 finalTerm           byte  10,10,"The value of term ",0
 finalDialog         byte  "is "
 
 .code
 
-;; Call fibonacci() - No Parameters, no return value
-fibonacci PROC near
-_fibonacci:
+;; Call gameLoop() - No Parameters, no return value
+gameLoop PROC near
+_gameLoop:
     ; Display prompt for user input
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
@@ -75,18 +73,18 @@ numberGet:
     push ebx
     
 
-    ; Print fibonacciDialog dialog
+    ; Print gameLoopDialog
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax
-    push  offset fibonacciDialog
+    push  offset gameLoopDialog
     call  charCount
         ;; Call writeline(addr, chars) - push parameter in reverse order
         ;; Parameters: addr is address of buffer = &addr[0]
         ;;             chars is the character count in the buffer
         ;; Returns nothing
     push  eax
-    push  offset fibonacciDialog
+    push  offset gameLoopDialog
     call  writeline
 
     ;prep registers for addloop
@@ -95,7 +93,7 @@ numberGet:
     mov   ecx, 1
     push ebx
 
-    ;addloop adds eax and ecx to get the next term in the fibonacci sequence and also prints it to the console
+    ;addloop adds eax and ecx to get the next term in the fib. sequence and also prints it to the console
 addloop:
     ;add function
     push  eax
@@ -180,8 +178,8 @@ termSizeError:
     push  eax
     push  offset termSizeErrorMsg
     call  writeline
-    jmp _fibonacci
+    jmp _gameLoop
 ; End termSizeError
     
-fibonacci ENDP
+gameLoop ENDP
 END

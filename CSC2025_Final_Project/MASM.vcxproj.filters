@@ -21,7 +21,7 @@
     <MASM Include="readWrite.asm">
       <Filter>Source Files</Filter>
     </MASM>
-    <MASM Include="fibonacci.asm">
+    <MASM Include="gameLoop.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>
