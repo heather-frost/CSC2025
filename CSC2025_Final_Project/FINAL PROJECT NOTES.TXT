@@ -1,0 +1,59 @@
+Program flow/pseudocode:
+
+SETUP
+set score to 0
+generate random number 0-3
+	populate 25 entries
+
+mark all entries (separate array?) as faceDown
+
+INFO VALUES
+	sum elements in array
+	count instances of value in array
+
+	sum elements in position N in arrays
+	count instances of value in position N in arrays
+
+GAMELOOP
+refresh display
+	grid: faceDown=X, faceUp=EntryValue
+	info values
+	score
+accept user input
+first entered value: which array
+second entered value: which value in that array
+	2-dimensional arrays in assembly?
+
+if value in entry=0: jmp GAME OVER
+
+mark entry faceUp
+update score:
+	if score=0: add entry
+	else: MUL score, entry
+
+check for facedown 2s
+	if none, check for facedown 3s
+		if none, VICTORY
+
+jmp GAMELOOP
+
+GAMEOVER
+	display "You blew up. Play again? y/n"
+
+VICTORY
+	display "You win! Your score was " + score
+
+---
+Tools/Techniques/Problems-to-solve
+
+2D ARRAY POPULATION/MANIPULATION
+	secondary array for facing?
+
+RANDOM NUMBER GENERATION
+
+DISPLAY
+	ASCII first
+	Irvine if time
+
+ACCEPT USER INPUT
+---
