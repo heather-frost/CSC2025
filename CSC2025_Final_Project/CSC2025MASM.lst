@@ -1,0 +1,266 @@
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 12:07:54
+readWrite.asm						     Page 1 - 1
+
+
+				; Main Console program
+				; Wayne Cook
+				; 20 September 2024
+				; Show how to do input and output
+				; Revised: WWC 14 March 2024 Added new module
+				; Revised: WWC 15 March 2024 Added this comment ot force a new commit.
+				; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
+				; Register names:
+				; Register names are NOT case sensitive eax and EAX are the same register
+				; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
+				;	the right most 16 bits of EAX). AL is the right-most 8 bits.
+				; Writing into AX or AL effects the right most bits of EAX.
+				;     EAX - caller saved register - usually used for communication between
+				;			caller and callee.
+				;     EBX - Callee saved register
+				;     ECX - Caller saved register - Counter register 
+				;     EDX - Caller Saved register - data, I use it for saving and restoring
+				;			the return address
+				;     ESI - Callee Saved register - Source Index
+				;     EDI - Callee Saved register - Destination Index
+				;     ESP - Callee Saved register - stack pointer
+				;     EBP - Callee Saved register - base pointer.386P
+
+				.model flat
+
+				; Library calls used for input from and output to the console
+				extern  _GetStdHandle@4:near
+				extern  _WriteConsoleA@20:near
+				extern  _ReadConsoleA@20:near
+				extern  _ExitProcess@4: near
+
+ 00000000			.data
+
+ 00000000 48 65 6C 6C 6F	msg             byte  "Hello, World", 10, 0   ; ends with line feed (10) and NULL
+	   2C 20 57 6F 72
+	   6C 64 0A 00
+ 0000000E 50 6C 65 61 73	prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
+	   65 20 74 79 70
+	   65 20 79 6F 75
+	   72 20 6E 61 6D
+	   65 3A 20 00
+ 00000026 0A 59 6F 75 20	results         byte  10,"You typed: ", 0
+	   74 79 70 65 64
+	   3A 20 00
+ 00000033 00000000		outputHandle    dword ?           ; Output handle writing to consol. uninitslized
+ 00000037 00000000		inputHandle     dword ?           ; Input handle reading from consolee. uninitslized
+ 0000003B 00000000		written         dword ?
+ =-0000000A			INPUT_FLAG      equ   -10
+ =-0000000B			OUTPUT_FLAG     equ   -11
+
+				; Reading and writing requires buffers. I fill them with 00h.
+ 0000003F  00000400 [		readBuffer      byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000043F  00000400 [		writeBuffer     byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000083F  00000400 [		numberBuffer    byte  1024        DUP(00h)
+	    00
+	   ]
+ 00000C3F 00000400		numCharsToRead  dword 1024
+ 00000C43 00000000		numCharsRead    dword ?                                   ; Unset or uninitialized
+
+
+ 00000000			.code
+
+				;; Call initialize_console() - No Parameters, no return value
+				;; Initialize Input and Output handles so you only have to do that once.
+				;; This is your first assembly routine
+ 00000000			initialize_console PROC near
+ 00000000			_initialize_console:
+
+				    ; handle = GetStdHandle(-11)
+ 00000000  6A F5		    push    OUTPUT_FLAG
+ 00000002  E8 00000000 E	    call    _GetStdHandle@4
+ 00000007  A3 00000033 R	    mov     outputHandle, eax
+				    ; handle = GetStdHandle(-10)
+ 0000000C  6A F6		    push  INPUT_FLAG
+ 0000000E  E8 00000000 E	    call  _GetStdHandle@4
+ 00000013  A3 00000037 R	    mov   inputHandle, eax
+ 00000018  C3			    ret
+ 00000019			initialize_console ENDP
+
+				;; Call readline() - No Parameters, Returns ptr to buffer in eax
+				;; Now the read/write handles are set, read a line
+ 00000019			readline PROC near
+ 00000019			_readline: 
+				      ; ReadConsole(handle, &buffer, numCharToRead, numCharsRead, null)
+ 00000019  6A 00		    push  0
+ 0000001B  68 00000C43 R	    push  offset numCharsRead
+ 00000020  FF 35 00000C3F R	    push  numCharsToRead
+ 00000026  68 0000003F R	    push  offset readBuffer
+ 0000002B  FF 35 00000037 R	    push  inputHandle
+ 00000031  E8 00000000 E	    call  _ReadConsoleA@20
+ 00000036  B8 0000003F R	    mov   eax, offset readBuffer
+ 0000003B  C3			    ret
+ 0000003C			readline ENDP
+
+				;; Call charCount(addr)
+				;; Parameters: addr is address of buffer = &addr[0]
+				;; Returns character count in eax
+				;; All strings need to end with a NULL (0). So I do not have to manually count the number of
+				;;   characters in the line, I wrote this routine.
+ 0000003C			charCount PROC near
+ 0000003C			_charCount:
+ 0000003C  5A			    pop  edx                        ; Save return address
+ 0000003D  5B			    pop  ebx                        ; save offset/address of string
+ 0000003E  52			    push edx                        ; Put return address back on the stack
+ 0000003F  B8 00000000		    mov  eax,0                      ; load counter to 0
+ 00000044  B9 00000000		    mov  ecx,0                      ; Clear ECX register
+ 00000049			_countLoop:
+ 00000049  8A 0B		    mov  cl,[ebx]                   ; Look at the character in the string
+ 0000004B  83 F9 00		    cmp  ecx,0                      ; check for end of string.
+ 0000004E  7E 04		    jle  _endCount
+ 00000050  40			    inc  eax                        ; Up the count by one
+ 00000051  43			    inc  ebx                        ; go to next letter
+ 00000052  EB F5		    jmp  _countLoop
+ 00000054			_endCount:
+ 00000054  C3			    ret                             ;Return with EAX containing character count
+ 00000055			charCount ENDP
+
+				;; Call writeline(addr, chars) - push parameter in reverse order
+				;; Parameters: addr is address of buffer = &addr[0]
+				;;             chars is the character count in the buffer
+				;; Returns nothing
+				;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+				;; then save any other expected parameters in registers, then restore the return address to the stack.
+ 00000055			writeline PROC near
+ 00000055			_writeline:
+ 00000055  5A			    pop   edx                        ; pop return address from the stack into EDX
+ 00000056  5B			    pop   ebx                        ; Pop the buffer location of string to be printed into EBX
+ 00000057  58			    pop   eax                        ; Pop the buffer size string to be printed into EAX.
+ 00000058  52			    push  edx                        ; Restore return address to the stack
+
+
+				    ; WriteConsole(handle, &msg[0], numCharsToWrite, &written, 0)
+ 00000059  6A 00		    push   0
+ 0000005B  68 0000003B R	    push   offset written
+ 00000060  50			    push   eax                       ; return size to the stack for the call to _WriteConsoleA@20 (20 is how many bits are in the call stack)
+ 00000061  53			    push   ebx                       ; return the offset of the line to be written
+ 00000062  FF 35 00000033 R	    push   outputHandle
+ 00000068  E8 00000000 E	    call   _WriteConsoleA@20
+ 0000006D  C3			    ret
+ 0000006E			writeline ENDP
+
+				;; Call writeNumber(number) - print the ASCII value of a number.
+				;; Parameter: number is number to be converted to Ascii and printed.
+				;; Returns nothing
+				;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+				;; then save any other expected parameters in registers, then restore the return address to the stack.
+ 0000006E			writeNumber PROC near
+ 0000006E			_writeNumber:
+ 0000006E  5A			    pop   edx                        ; pop return address from the stack into EDX
+ 0000006F  58			    pop   eax                        ; Pop the number to be written.
+ 00000070  52			    push  edx                        ; Restore return address to the stack
+ 00000071  56			    push  esi                        ; Preserve for the caller
+ 00000072  B9 0000000A		    mov   ecx, 10                    ; Set the divisor to ten
+ 00000077  BE 00000000		    mov   esi, 0                     ; Count number of numbers written
+ 0000007C  BB 0000083F R	    mov   ebx, offset numberBuffer   ; Save the start of the write buffer
+				;; The dividend is place in eax, then divide by ecx, the result goes into eax, with the remiander in edx
+ 00000081			genNumLoop:
+ 00000081  83 F8 00		    cmp   eax, 0                     ; Stop when the nubmer is 0
+ 00000084  7E 10		    jle   endNumLoop
+ 00000086  BA 00000000		    mov   edx, 0                     ; Clear the register for the remainder
+ 0000008B  F7 F1		    div   ecx                        ; Do the divide
+ 0000008D  66| 83 C2 30		    add   dx,'0'                     ; Turn the remainer into an ASCII number
+ 00000091  66| 52		    push  dx                         ; Now push the remainder onto the stack
+ 00000093  46			    inc   esi                        ; increment number count
+ 00000094  EB EB		    jmp   genNumLoop                 ; One more time.
+ 00000096			endNumLoop:
+ 00000096  83 FE 00		    cmp   esi,0
+ 00000099  7E 09		    jle   numExit
+ 0000009B  66| 5A		    pop   dx
+ 0000009D  66| 89 13		    mov   [ebx], dx                  ; Add the number to the output sring
+ 000000A0  4E			    dec   esi                        ; Get ready for the next number
+ 000000A1  43			    inc   ebx                        ; Go to the next character
+ 000000A2  EB F2		    jmp   endNumLoop                 ; Do it one more time
+				    
+ 000000A4			numExit:
+ 000000A4  66| BA 0020		    mov   dx, ' '                    ; cannot load a literal into an addressed location
+ 000000A8  66| 89 13		    mov   [ebx], dx                  ; Add a space to the end of the number
+ 000000AB  89 73 01		    mov   [ebx+1], esi               ; Add the number to the output sring
+ 000000AE  68 0000083F R	    push  offset numberBuffer
+ 000000B3  E8 FFFFFF84		    call  charCount
+ 000000B8  50			    push  eax
+ 000000B9  68 0000083F R	    push  offset numberBuffer
+ 000000BE  E8 FFFFFF92		    call  writeline
+ 000000C3  5E			    pop   esi                        ; Restore for the user.
+ 000000C4  C3			    ret
+				    
+ 000000C5			writeNumber ENDP
+
+				END
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 12:07:54
+readWrite.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000C47 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C5 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+charCount  . . . . . . . . . . .	P Near	 0000003C _TEXT	Length= 00000019 Public
+  _charCount . . . . . . . . . .	L Near	 0000003C _TEXT	
+  _countLoop . . . . . . . . . .	L Near	 00000049 _TEXT	
+  _endCount  . . . . . . . . . .	L Near	 00000054 _TEXT	
+initialize_console . . . . . . .	P Near	 00000000 _TEXT	Length= 00000019 Public
+  _initialize_console  . . . . .	L Near	 00000000 _TEXT	
+readline . . . . . . . . . . . .	P Near	 00000019 _TEXT	Length= 00000023 Public
+  _readline  . . . . . . . . . .	L Near	 00000019 _TEXT	
+writeNumber  . . . . . . . . . .	P Near	 0000006E _TEXT	Length= 00000057 Public
+  _writeNumber . . . . . . . . .	L Near	 0000006E _TEXT	
+  genNumLoop . . . . . . . . . .	L Near	 00000081 _TEXT	
+  endNumLoop . . . . . . . . . .	L Near	 00000096 _TEXT	
+  numExit  . . . . . . . . . . .	L Near	 000000A4 _TEXT	
+writeline  . . . . . . . . . . .	P Near	 00000055 _TEXT	Length= 00000019 Public
+  _writeline . . . . . . . . . .	L Near	 00000055 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+INPUT_FLAG . . . . . . . . . . .	Number	 -0000000Ah   
+OUTPUT_FLAG  . . . . . . . . . .	Number	 -0000000Bh   
+_ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
+_GetStdHandle@4  . . . . . . . .	L Near	 00000000 FLAT	External
+_ReadConsoleA@20 . . . . . . . .	L Near	 00000000 FLAT	External
+_WriteConsoleA@20  . . . . . . .	L Near	 00000000 FLAT	External
+inputHandle  . . . . . . . . . .	DWord	 00000037 _DATA	
+msg  . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+numCharsRead . . . . . . . . . .	DWord	 00000C43 _DATA	
+numCharsToRead . . . . . . . . .	DWord	 00000C3F _DATA	
+numberBuffer . . . . . . . . . .	Byte	 0000083F _DATA	
+outputHandle . . . . . . . . . .	DWord	 00000033 _DATA	
+prompt . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+readBuffer . . . . . . . . . . .	Byte	 0000003F _DATA	
+results  . . . . . . . . . . . .	Byte	 00000026 _DATA	
+writeBuffer  . . . . . . . . . .	Byte	 0000043F _DATA	
+written  . . . . . . . . . . . .	DWord	 0000003B _DATA	
+
+	   0 Warnings
+	   0 Errors

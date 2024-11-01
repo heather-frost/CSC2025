@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:53:54
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 11:43:37
 fibonacci.asm						     Page 1 - 1
 
 
@@ -6,7 +6,8 @@ fibonacci.asm						     Page 1 - 1
 				; Spencer Medberry
 				; 27 September 2024
 				; fibonacci counter built from start.asm
-				; SAM updated based on feedback 10/12/2024
+				; Revised: SAM 10/12/2024 updated based on feedback
+				; Revised: SAM 10/16/2024 added input checking and final dialog
 
 				; Register usage:
 				;     EAX - readWrite procedure communication, fibonacci sum
@@ -222,7 +223,7 @@ fibonacci.asm						     Page 1 - 1
 				    
  000000D4			fibonacci ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/16/24 16:53:54
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 11:43:37
 fibonacci.asm						     Symbols 2 - 1
 
 
