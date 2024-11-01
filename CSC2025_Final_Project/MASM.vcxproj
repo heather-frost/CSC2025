@@ -136,7 +136,6 @@
     <MASM Include="fibonacci.asm" />
     <MASM Include="main.asm" />
     <MASM Include="readWrite.asm" />
-    <MASM Include="start.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

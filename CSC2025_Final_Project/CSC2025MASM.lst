@@ -1,230 +1,202 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 11:43:37
-fibonacci.asm						     Page 1 - 1
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/01/24 11:16:30
+readWrite.asm						     Page 1 - 1
 
 
 				; Main Console program
-				; Spencer Medberry
-				; 27 September 2024
-				; fibonacci counter built from start.asm
-				; Revised: SAM 10/12/2024 updated based on feedback
-				; Revised: SAM 10/16/2024 added input checking and final dialog
-
-				; Register usage:
-				;     EAX - readWrite procedure communication, fibonacci sum
-				;     EBX - integer user input result for term counting
-				;     ECX - helper register: char storage during ASCII conversion, lesser fibonacci addend
+				; Wayne Cook
+				; 20 September 2024
+				; Show how to do input and output
+				; Revised: WWC 14 March 2024 Added new module
+				; Revised: WWC 15 March 2024 Added this comment ot force a new commit.
+				; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
+				; Register names:
+				; Register names are NOT case sensitive eax and EAX are the same register
+				; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
+				;	the right most 16 bits of EAX). AL is the right-most 8 bits.
+				; Writing into AX or AL effects the right most bits of EAX.
+				;     EAX - caller saved register - usually used for communication between
+				;			caller and callee.
+				;     EBX - Callee saved register
+				;     ECX - Caller saved register - Counter register 
+				;     EDX - Caller Saved register - data, I use it for saving and restoring
+				;			the return address
+				;     ESI - Callee Saved register - Source Index
+				;     EDI - Callee Saved register - Destination Index
+				;     ESP - Callee Saved register - stack pointer
+				;     EBP - Callee Saved register - base pointer.386P
 
 				.model flat
 
-				extern writeline: near
-				extern readline: near
-				extern charCount: near
-				extern writeNumber: near
+				; Library calls used for input from and output to the console
+				extern  _GetStdHandle@4:near
+				extern  _WriteConsoleA@20:near
+				extern  _ReadConsoleA@20:near
+				extern  _ExitProcess@4: near
 
  00000000			.data
 
-				; both end with 0 to terminate the string
- 00000000 48 6F 77 20 6D	prompt              byte  "How many fibonacci terms would you like? Enter a number between 1 and 45: ", 0
-	   61 6E 79 20 66
-	   69 62 6F 6E 61
-	   63 63 69 20 74
-	   65 72 6D 73 20
-	   77 6F 75 6C 64
-	   20 79 6F 75 20
-	   6C 69 6B 65 3F
-	   20 45 6E 74 65
-	   72 20 61 20 6E
-	   75 6D 62 65 72
-	   20 62 65 74 77
-	   65 65 6E 20 31
-	   20 61 6E 64 20
-	   34 35 3A 20 00
-				; beginning with 10 sends a line feed character before the text
- 0000004B 0A 53 74 61 72	fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-	   74 69 6E 67 20
-	   77 69 74 68 20
-	   31 20 61 6E 64
-	   20 32 2C 20 74
-	   68 65 20 74 65
-	   72 6D 73 20 70
-	   72 6F 64 75 63
-	   65 64 20 61 72
+ 00000000 48 65 6C 6C 6F	msg             byte  "Hello, World", 10, 0   ; ends with line feed (10) and NULL
+	   2C 20 57 6F 72
+	   6C 64 0A 00
+ 0000000E 50 6C 65 61 73	prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
+	   65 20 74 79 70
+	   65 20 79 6F 75
+	   72 20 6E 61 6D
 	   65 3A 20 00
- 0000007C 50 6C 65 61 73	termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
-	   65 20 65 6E 74
-	   65 72 20 61 20
-	   74 65 72 6D 20
-	   62 65 74 77 65
-	   65 6E 20 31 20
-	   61 6E 64 20 34
-	   35 2E 0A 0A 00
- 000000A4 0A 0A 54 68 65	finalTerm           byte  10,10,"The value of term ",0
-	   20 76 61 6C 75
-	   65 20 6F 66 20
-	   74 65 72 6D 20
-	   00
- 000000B9 69 73 20		finalDialog         byte  "is "
+ 00000026 0A 59 6F 75 20	results         byte  10,"You typed: ", 0
+	   74 79 70 65 64
+	   3A 20 00
+ 00000033 00000000		outputHandle    dword ?           ; Output handle writing to consol. uninitslized
+ 00000037 00000000		inputHandle     dword ?           ; Input handle reading from consolee. uninitslized
+ 0000003B 00000000		written         dword ?
+ =-0000000A			INPUT_FLAG      equ   -10
+ =-0000000B			OUTPUT_FLAG     equ   -11
+
+				; Reading and writing requires buffers. I fill them with 00h.
+ 0000003F  00000400 [		readBuffer      byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000043F  00000400 [		writeBuffer     byte  1024        DUP(00h)
+	    00
+	   ]
+ 0000083F  00000400 [		numberBuffer    byte  1024        DUP(00h)
+	    00
+	   ]
+ 00000C3F 00000400		numCharsToRead  dword 1024
+ 00000C43 00000000		numCharsRead    dword ?                                   ; Unset or uninitialized
+
 
  00000000			.code
 
-				;; Call fibonacci() - No Parameters, no return value
- 00000000			fibonacci PROC near
- 00000000			_fibonacci:
-				    ; Display prompt for user input
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 00000000  68 00000000 R	    push  offset prompt
- 00000005  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 0000000A  50			    push  eax
- 0000000B  68 00000000 R	    push  offset prompt
- 00000010  E8 00000000 E	    call  writeline
+				;; Call initialize_console() - No Parameters, no return value
+				;; Initialize Input and Output handles so you only have to do that once.
+				;; This is your first assembly routine
+ 00000000			initialize_console PROC near
+ 00000000			_initialize_console:
 
-				    ; ask console for user input
-				        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
- 00000015  E8 00000000 E	    call  readline
-				    ; user input stored in eax
+				    ; handle = GetStdHandle(-11)
+ 00000000  6A F5		    push    OUTPUT_FLAG
+ 00000002  E8 00000000 E	    call    _GetStdHandle@4
+ 00000007  A3 00000033 R	    mov     outputHandle, eax
+				    ; handle = GetStdHandle(-10)
+ 0000000C  6A F6		    push  INPUT_FLAG
+ 0000000E  E8 00000000 E	    call  _GetStdHandle@4
+ 00000013  A3 00000037 R	    mov   inputHandle, eax
+ 00000018  C3			    ret
+ 00000019			initialize_console ENDP
+
+				;; Call readline() - No Parameters, Returns ptr to buffer in eax
+				;; Now the read/write handles are set, read a line
+ 00000019			readline PROC near
+ 00000019			_readline: 
+				      ; ReadConsole(handle, &buffer, numCharToRead, numCharsRead, null)
+ 00000019  6A 00		    push  0
+ 0000001B  68 00000C43 R	    push  offset numCharsRead
+ 00000020  FF 35 00000C3F R	    push  numCharsToRead
+ 00000026  68 0000003F R	    push  offset readBuffer
+ 0000002B  FF 35 00000037 R	    push  inputHandle
+ 00000031  E8 00000000 E	    call  _ReadConsoleA@20
+ 00000036  B8 0000003F R	    mov   eax, offset readBuffer
+ 0000003B  C3			    ret
+ 0000003C			readline ENDP
+
+				;; Call charCount(addr)
+				;; Parameters: addr is address of buffer = &addr[0]
+				;; Returns character count in eax
+				;; All strings need to end with a NULL (0). So I do not have to manually count the number of
+				;;   characters in the line, I wrote this routine.
+ 0000003C			charCount PROC near
+ 0000003C			_charCount:
+ 0000003C  5A			    pop  edx                        ; Save return address
+ 0000003D  5B			    pop  ebx                        ; save offset/address of string
+ 0000003E  52			    push edx                        ; Put return address back on the stack
+ 0000003F  B8 00000000		    mov  eax,0                      ; load counter to 0
+ 00000044  B9 00000000		    mov  ecx,0                      ; Clear ECX register
+ 00000049			_countLoop:
+ 00000049  8A 0B		    mov  cl,[ebx]                   ; Look at the character in the string
+ 0000004B  83 F9 00		    cmp  ecx,0                      ; check for end of string.
+ 0000004E  7E 04		    jle  _endCount
+ 00000050  40			    inc  eax                        ; Up the count by one
+ 00000051  43			    inc  ebx                        ; go to next letter
+ 00000052  EB F5		    jmp  _countLoop
+ 00000054			_endCount:
+ 00000054  C3			    ret                             ;Return with EAX containing character count
+ 00000055			charCount ENDP
+
+				;; Call writeline(addr, chars) - push parameter in reverse order
+				;; Parameters: addr is address of buffer = &addr[0]
+				;;             chars is the character count in the buffer
+				;; Returns nothing
+				;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+				;; then save any other expected parameters in registers, then restore the return address to the stack.
+ 00000055			writeline PROC near
+ 00000055			_writeline:
+ 00000055  5A			    pop   edx                        ; pop return address from the stack into EDX
+ 00000056  5B			    pop   ebx                        ; Pop the buffer location of string to be printed into EBX
+ 00000057  58			    pop   eax                        ; Pop the buffer size string to be printed into EAX.
+ 00000058  52			    push  edx                        ; Restore return address to the stack
+
+
+				    ; WriteConsole(handle, &msg[0], numCharsToWrite, &written, 0)
+ 00000059  6A 00		    push   0
+ 0000005B  68 0000003B R	    push   offset written
+ 00000060  50			    push   eax                       ; return size to the stack for the call to _WriteConsoleA@20 (20 is how many bits are in the call stack)
+ 00000061  53			    push   ebx                       ; return the offset of the line to be written
+ 00000062  FF 35 00000033 R	    push   outputHandle
+ 00000068  E8 00000000 E	    call   _WriteConsoleA@20
+ 0000006D  C3			    ret
+ 0000006E			writeline ENDP
+
+				;; Call writeNumber(number) - print the ASCII value of a number.
+				;; Parameter: number is number to be converted to Ascii and printed.
+				;; Returns nothing
+				;; For all routines, the last item to be pushed on the stack is the return address, save it to a register
+				;; then save any other expected parameters in registers, then restore the return address to the stack.
+ 0000006E			writeNumber PROC near
+ 0000006E			_writeNumber:
+ 0000006E  5A			    pop   edx                        ; pop return address from the stack into EDX
+ 0000006F  58			    pop   eax                        ; Pop the number to be written.
+ 00000070  52			    push  edx                        ; Restore return address to the stack
+ 00000071  56			    push  esi                        ; Preserve for the caller
+ 00000072  B9 0000000A		    mov   ecx, 10                    ; Set the divisor to ten
+ 00000077  BE 00000000		    mov   esi, 0                     ; Count number of numbers written
+ 0000007C  BB 0000083F R	    mov   ebx, offset numberBuffer   ; Save the start of the write buffer
+				;; The dividend is place in eax, then divide by ecx, the result goes into eax, with the remiander in edx
+ 00000081			genNumLoop:
+ 00000081  83 F8 00		    cmp   eax, 0                     ; Stop when the nubmer is 0
+ 00000084  7E 10		    jle   endNumLoop
+ 00000086  BA 00000000		    mov   edx, 0                     ; Clear the register for the remainder
+ 0000008B  F7 F1		    div   ecx                        ; Do the divide
+ 0000008D  66| 83 C2 30		    add   dx,'0'                     ; Turn the remainer into an ASCII number
+ 00000091  66| 52		    push  dx                         ; Now push the remainder onto the stack
+ 00000093  46			    inc   esi                        ; increment number count
+ 00000094  EB EB		    jmp   genNumLoop                 ; One more time.
+ 00000096			endNumLoop:
+ 00000096  83 FE 00		    cmp   esi,0
+ 00000099  7E 09		    jle   numExit
+ 0000009B  66| 5A		    pop   dx
+ 0000009D  66| 89 13		    mov   [ebx], dx                  ; Add the number to the output sring
+ 000000A0  4E			    dec   esi                        ; Get ready for the next number
+ 000000A1  43			    inc   ebx                        ; Go to the next character
+ 000000A2  EB F2		    jmp   endNumLoop                 ; Do it one more time
 				    
-				    ;convert user input from ASCII to integer
- 0000001A  B9 00000000		    mov   ecx,0
- 0000001F  BB 00000000		    mov   ebx,0
- 00000024			ASCIIloop:
- 00000024  8A 08		    mov  cl,[eax]                   ; Look at the character in the string
- 00000026  83 F9 0D		    cmp  ecx,13                     ; check for carriage return.
- 00000029  74 15		    je numberGet
- 0000002B  83 F9 0A		    cmp  ecx,10                     ; check for line feed.
- 0000002E  74 10		    je numberGet
- 00000030  83 F9 00		    cmp  ecx,0                      ; check for end of string.
- 00000033  74 0B		    je numberGet
- 00000035  80 E9 30		    sub  cl,'0'
- 00000038  6B DB 0A		    imul ebx,10
- 0000003B  03 D9		    add  ebx,ecx
- 0000003D  40			    inc  eax                        ; go to next letter
- 0000003E  EB E4		    jmp  ASCIIloop
- 00000040			numberGet:
- 00000040  83 FB 2D		    cmp ebx,45
- 00000043  7F 75		    jg termSizeError
- 00000045  83 FB 01		    cmp ebx,1
- 00000048  7C 70		    jl termSizeError
- 0000004A  53			    push ebx
+ 000000A4			numExit:
+ 000000A4  66| BA 0020		    mov   dx, ' '                    ; cannot load a literal into an addressed location
+ 000000A8  66| 89 13		    mov   [ebx], dx                  ; Add a space to the end of the number
+ 000000AB  89 73 01		    mov   [ebx+1], esi               ; Add the number to the output sring
+ 000000AE  68 0000083F R	    push  offset numberBuffer
+ 000000B3  E8 FFFFFF84		    call  charCount
+ 000000B8  50			    push  eax
+ 000000B9  68 0000083F R	    push  offset numberBuffer
+ 000000BE  E8 FFFFFF92		    call  writeline
+ 000000C3  5E			    pop   esi                        ; Restore for the user.
+ 000000C4  C3			    ret
 				    
+ 000000C5			writeNumber ENDP
 
-				    ; Print fibonacciDialog dialog
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 0000004B  68 0000004B R	    push  offset fibonacciDialog
- 00000050  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 00000055  50			    push  eax
- 00000056  68 0000004B R	    push  offset fibonacciDialog
- 0000005B  E8 00000000 E	    call  writeline
-
-				    ;prep registers for addloop
- 00000060  5B			    pop ebx
- 00000061  B8 00000002		    mov   eax, 2
- 00000066  B9 00000001		    mov   ecx, 1
- 0000006B  53			    push ebx
-
-				    ;addloop adds eax and ecx to get the next term in the fibonacci sequence and also prints it to the console
- 0000006C			addloop:
-				    ;add function
- 0000006C  50			    push  eax
- 0000006D  03 C1		    add   eax, ecx
- 0000006F  59			    pop   ecx
-
-				    ;store registers
- 00000070  50			    push  eax
- 00000071  51			    push  ecx
- 00000072  53			    push  ebx
-
-				    ;writeNumber
-				        ;; Call writeNumber(number) - print the ASCII value of a number.
-				        ;; Parameter: number is number to be converted to Ascii and printed.
-				        ;; Returns nothing
- 00000073  50			    push  eax
- 00000074  E8 00000000 E	    call  writeNumber
-
-				    ;retrieve registers
- 00000079  5B			    pop   ebx
- 0000007A  59			    pop   ecx
- 0000007B  58			    pop   eax
-
-				    ;loopy bit
- 0000007C  4B			    dec ebx
- 0000007D  83 FB 00		    cmp ebx,0
- 00000080  7F EA		    jg  addloop
-				;End addloop
-
-				;Ending dialog
- 00000082  5B			    pop ebx
- 00000083  50			    push eax    ;2nd writeNumber parameter
- 00000084  53			    push ebx    ;1st writeNumber parameter
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 00000085  68 000000A4 R	    push  offset finalTerm
- 0000008A  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 0000008F  50			    push  eax
- 00000090  68 000000A4 R	    push  offset finalTerm
- 00000095  E8 00000000 E	    call  writeline
-				        ;; Call writeNumber(number) - print the ASCII value of a number.
-				        ;; Parameter: number is number to be converted to Ascii and printed.
-				        ;; Returns nothing
- 0000009A  E8 00000000 E	    call  writeNumber
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 0000009F  68 000000B9 R	    push  offset finalDialog
- 000000A4  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 000000A9  50			    push  eax
- 000000AA  68 000000B9 R	    push  offset finalDialog
- 000000AF  E8 00000000 E	    call  writeline
-				        ;; Call writeNumber(number) - print the ASCII value of a number.
-				        ;; Parameter: number is number to be converted to Ascii and printed.
-				        ;; Returns nothing
- 000000B4  E8 00000000 E	    call  writeNumber
-
-
- 000000B9			exit:
- 000000B9  C3			    ret     ; Return to the main program.
-
- 000000BA			termSizeError:
-				    ; Print termSizeErrorMsg
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 000000BA  68 0000007C R	    push  offset termSizeErrorMsg
- 000000BF  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 000000C4  50			    push  eax
- 000000C5  68 0000007C R	    push  offset termSizeErrorMsg
- 000000CA  E8 00000000 E	    call  writeline
- 000000CF  E9 FFFFFF2C		    jmp _fibonacci
-				; End termSizeError
-				    
- 000000D4			fibonacci ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    10/30/24 11:43:37
-fibonacci.asm						     Symbols 2 - 1
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/01/24 11:16:30
+readWrite.asm						     Symbols 2 - 1
 
 
 
@@ -234,21 +206,29 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 000000BC Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000D4 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000C47 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C5 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-fibonacci  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000D4 Public
-  _fibonacci . . . . . . . . . .	L Near	 00000000 _TEXT	
-  ASCIIloop  . . . . . . . . . .	L Near	 00000024 _TEXT	
-  numberGet  . . . . . . . . . .	L Near	 00000040 _TEXT	
-  addloop  . . . . . . . . . . .	L Near	 0000006C _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 000000B9 _TEXT	
-  termSizeError  . . . . . . . .	L Near	 000000BA _TEXT	
+charCount  . . . . . . . . . . .	P Near	 0000003C _TEXT	Length= 00000019 Public
+  _charCount . . . . . . . . . .	L Near	 0000003C _TEXT	
+  _countLoop . . . . . . . . . .	L Near	 00000049 _TEXT	
+  _endCount  . . . . . . . . . .	L Near	 00000054 _TEXT	
+initialize_console . . . . . . .	P Near	 00000000 _TEXT	Length= 00000019 Public
+  _initialize_console  . . . . .	L Near	 00000000 _TEXT	
+readline . . . . . . . . . . . .	P Near	 00000019 _TEXT	Length= 00000023 Public
+  _readline  . . . . . . . . . .	L Near	 00000019 _TEXT	
+writeNumber  . . . . . . . . . .	P Near	 0000006E _TEXT	Length= 00000057 Public
+  _writeNumber . . . . . . . . .	L Near	 0000006E _TEXT	
+  genNumLoop . . . . . . . . . .	L Near	 00000081 _TEXT	
+  endNumLoop . . . . . . . . . .	L Near	 00000096 _TEXT	
+  numExit  . . . . . . . . . . .	L Near	 000000A4 _TEXT	
+writeline  . . . . . . . . . . .	P Near	 00000055 _TEXT	Length= 00000019 Public
+  _writeline . . . . . . . . . .	L Near	 00000055 _TEXT	
 
 
 Symbols:
@@ -264,15 +244,23 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
-fibonacciDialog  . . . . . . . .	Byte	 0000004B _DATA	
-finalDialog  . . . . . . . . . .	Byte	 000000B9 _DATA	
-finalTerm  . . . . . . . . . . .	Byte	 000000A4 _DATA	
-prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-termSizeErrorMsg . . . . . . . .	Byte	 0000007C _DATA	
-writeNumber  . . . . . . . . . .	L Near	 00000000 FLAT	External
-writeline  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+INPUT_FLAG . . . . . . . . . . .	Number	 -0000000Ah   
+OUTPUT_FLAG  . . . . . . . . . .	Number	 -0000000Bh   
+_ExitProcess@4 . . . . . . . . .	L Near	 00000000 FLAT	External
+_GetStdHandle@4  . . . . . . . .	L Near	 00000000 FLAT	External
+_ReadConsoleA@20 . . . . . . . .	L Near	 00000000 FLAT	External
+_WriteConsoleA@20  . . . . . . .	L Near	 00000000 FLAT	External
+inputHandle  . . . . . . . . . .	DWord	 00000037 _DATA	
+msg  . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+numCharsRead . . . . . . . . . .	DWord	 00000C43 _DATA	
+numCharsToRead . . . . . . . . .	DWord	 00000C3F _DATA	
+numberBuffer . . . . . . . . . .	Byte	 0000083F _DATA	
+outputHandle . . . . . . . . . .	DWord	 00000033 _DATA	
+prompt . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+readBuffer . . . . . . . . . . .	Byte	 0000003F _DATA	
+results  . . . . . . . . . . . .	Byte	 00000026 _DATA	
+writeBuffer  . . . . . . . . . .	Byte	 0000043F _DATA	
+written  . . . . . . . . . . . .	DWord	 0000003B _DATA	
 
 	   0 Warnings
 	   0 Errors
