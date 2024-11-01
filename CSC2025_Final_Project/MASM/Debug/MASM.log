@@ -1,9 +1,1 @@
-﻿  Assembling fibonacci.asm...
-  Assembling main.asm...
-  Assembling readWrite.asm...
-main.obj : error LNK2019: unresolved external symbol _ExitProcess@4 referenced in function main
-readWrite.obj : error LNK2001: unresolved external symbol _ExitProcess@4
-readWrite.obj : error LNK2019: unresolved external symbol _GetStdHandle@4 referenced in function initialize_console
-readWrite.obj : error LNK2019: unresolved external symbol _WriteConsoleA@20 referenced in function writeline
-readWrite.obj : error LNK2019: unresolved external symbol _ReadConsoleA@20 referenced in function readline
-C:\Users\Spencer\Documents\GitHub\CSC2025\CSC2025_Final_Project\Debug\MASM.exe : fatal error LNK1120: 4 unresolved externals
+﻿  MASM.vcxproj -> C:\Users\Spencer\Documents\GitHub\CSC2025\CSC2025_Final_Project\Debug\MASM.exe

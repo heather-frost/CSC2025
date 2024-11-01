@@ -82,8 +82,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>main</EntryPointSymbol>
-      <AdditionalLibraryDirectories>C:\irvine</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Irvine32.lib</AdditionalDependencies>
     </Link>
     <MASM>
       <AssembledCodeListingFile>CSC2025MASM.lst</AssembledCodeListingFile>
@@ -136,10 +134,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <MASM Include="fibonacci.asm" />
-    <MASM Include="main.asm">
-      <IncludePaths Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\irvine\</IncludePaths>
-    </MASM>
+    <MASM Include="main.asm" />
     <MASM Include="readWrite.asm" />
+    <MASM Include="start.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
