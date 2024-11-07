@@ -18,10 +18,11 @@ extern writeNumber: near
 .data
 
 ; both end with 0 to terminate the string
-prompt              byte  "Opening gameLoop prompt: Enter a number between 1 and 45: ", 0
+prompt              byte  "Opening gameLoop prompt here: OLD PROMPT: Enter a number between 1 and 45: ", 0
 ; beginning with 10 sends a line feed character before the text
 gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
+invalidInputDialog    byte  "Please enter a valid input.",10,10,0
+gameOverDialog      byte    "You blew up!",10,10,0
 finalTerm           byte  10,10,"The value of term ",0
 finalDialog         byte  "is "
 
@@ -30,7 +31,12 @@ finalDialog         byte  "is "
 ;; Call gameLoop() - No Parameters, no return value
 gameLoop PROC near
 _gameLoop:
-    ; Display prompt for user input
+
+Setup:
+;GAME SETUP GOES HERE
+
+gameLoopStart:
+    ; DISPLAY GAME STATE
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax
@@ -44,7 +50,7 @@ _gameLoop:
     push  offset prompt
     call  writeline
 
-    ; ask console for user input
+    ; ACCEPT USER INPUT
         ;; Call readline() - No Parameters, Returns ptr to buffer in eax
     call  readline
     ; user input stored in eax
@@ -67,64 +73,13 @@ ASCIIloop:
     jmp  ASCIIloop
 numberGet:
     cmp ebx,45
-    jg termSizeError
+    jg invalidInputError
     cmp ebx,1
-    jl termSizeError
-    push ebx
-    
+    jl invalidInputError
 
-    ; Print gameLoopDialog
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
-    push  offset gameLoopDialog
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset gameLoopDialog
-    call  writeline
 
-    ;prep registers for addloop
-    pop ebx
-    mov   eax, 2
-    mov   ecx, 1
-    push ebx
 
-    ;addloop adds eax and ecx to get the next term in the fib. sequence and also prints it to the console
-addloop:
-    ;add function
-    push  eax
-    add   eax, ecx
-    pop   ecx
-
-    ;store registers
-    push  eax
-    push  ecx
-    push  ebx
-
-    ;writeNumber
-        ;; Call writeNumber(number) - print the ASCII value of a number.
-        ;; Parameter: number is number to be converted to Ascii and printed.
-        ;; Returns nothing
-    push  eax
-    call  writeNumber
-
-    ;retrieve registers
-    pop   ebx
-    pop   ecx
-    pop   eax
-
-    ;loopy bit
-    dec ebx
-    cmp ebx,0
-    jg  addloop
-;End addloop
-
-;Ending dialog
-    pop ebx
+;VICTORY
     push eax    ;2nd writeNumber parameter
     push ebx    ;1st writeNumber parameter
         ;; Call charCount(addr)
@@ -160,26 +115,44 @@ addloop:
         ;; Returns nothing
     call  writeNumber
 
-
+playAgain:
+    
 exit:
     ret     ; Return to the main program.
 
-termSizeError:
-    ; Print termSizeErrorMsg
+gameOver:
+    ; Print gameOverDialog
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax
-    push  offset termSizeErrorMsg
+    push  offset gameOverDialog
     call  charCount
         ;; Call writeline(addr, chars) - push parameter in reverse order
         ;; Parameters: addr is address of buffer = &addr[0]
         ;;             chars is the character count in the buffer
         ;; Returns nothing
     push  eax
-    push  offset termSizeErrorMsg
+    push  offset gameOverDialog
+    call  writeline
+    jmp playAgain
+; End gameOver
+
+invalidInputError:
+    ; Print invalidInputDialog
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset invalidInputDialog
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset invalidInputDialog
     call  writeline
     jmp _gameLoop
-; End termSizeError
+; End invalidInputError
     
 gameLoop ENDP
 END

@@ -24,6 +24,7 @@ prompt              byte  "How many fibonacci terms would you like? Enter a numb
 ; beginning with 10 sends a line feed character before the text
 fibonacciDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 termSizeErrorMsg    byte  "Please enter a term between 1 and 45.",10,10,0
+endingPauseDialog     byte  10,10,"Press return to exit.",0
 finalTerm           byte  10,10,"The value of term ",0
 finalDialog         byte  "is "
 
@@ -164,6 +165,21 @@ addloop:
 
 
 exit:
+    ; Display prompt for user input
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset endingPauseDialog
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset endingPauseDialog
+    call  writeline
+        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+    call  readline
     ret     ; Return to the main program.
 
 termSizeError:

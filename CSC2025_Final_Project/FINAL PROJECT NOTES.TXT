@@ -7,12 +7,12 @@ generate random number 0-3
 
 mark all entries (separate array?) as faceDown
 
-INFO VALUES
-	sum elements in array
-	count instances of value in array
+	INFO VALUES
+		sum elements in array
+		count instances of value in array
 
-	sum elements in position N in arrays
-	count instances of value in position N in arrays
+		sum elements in position N in arrays
+		count instances of value in position N in arrays
 
 GAMELOOP
 refresh display
@@ -24,7 +24,7 @@ first entered value: which array
 second entered value: which value in that array
 	2-dimensional arrays in assembly?
 
-if value in entry=0: jmp GAME OVER
+if value in input entry=0: jmp GAME OVER
 
 mark entry faceUp
 update score:
@@ -56,4 +56,29 @@ DISPLAY
 	Irvine if time
 
 ACCEPT USER INPUT
+---
+UML NOTES:
+card:
+	value: int [0-3]
+	faceUp: bool
+
+lineInfo:
+	sum:  int
+	zeroCount: int
+
+	rowInfo:
+		calculateSum()
+		countZeroes()
+
+	columnInfo:
+		calculateSum()
+		countZeroes()
+
+Game:
+	score: int
+	setup()
+	gameLoop()
+	gameOver()
+	victory()
+	playAgain()
 ---
