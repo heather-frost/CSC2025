@@ -18,11 +18,12 @@ extern writeNumber: near
 .data
 
 ; both end with 0 to terminate the string
-prompt              byte  "Opening gameLoop prompt here: OLD PROMPT: Enter a number between 1 and 45: ", 0
+prompt              byte  "Opening gameLoop prompt here: OLD PROMPT: Enter a number between 1 and 5: ", 0
 ; beginning with 10 sends a line feed character before the text
 gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-invalidInputDialog    byte  "Please enter a valid input.",10,10,0
+invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
 gameOverDialog      byte    "You blew up!",10,10,0
+playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
 finalTerm           byte  10,10,"The value of term ",0
 finalDialog         byte  "is "
 
@@ -37,6 +38,8 @@ Setup:
 
 gameLoopStart:
     ; DISPLAY GAME STATE
+
+    ; DISPLAY GAME STATE [PLACEHOLDER FOR ROW DIALOG]
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax
@@ -58,24 +61,51 @@ gameLoopStart:
     ;convert user input from ASCII to integer
     mov   ecx,0
     mov   ebx,0
-ASCIIloop:
+
     mov  cl,[eax]                   ; Look at the character in the string
-    cmp  ecx,13                     ; check for carriage return.
-    je numberGet
-    cmp  ecx,10                     ; check for line feed.
-    je numberGet
-    cmp  ecx,0                      ; check for end of string.
-    je numberGet
     sub  cl,'0'
-    imul ebx,10
     add  ebx,ecx
-    inc  eax                        ; go to next letter
-    jmp  ASCIIloop
-numberGet:
-    cmp ebx,45
+
+    cmp ebx,5
     jg invalidInputError
     cmp ebx,1
     jl invalidInputError
+    push ebx
+
+    
+    ; DISPLAY GAME STATE [PLACEHOLDER FOR COLUMN DIALOG]
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset prompt
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset prompt
+    call  writeline
+
+    ; ACCEPT USER INPUT
+        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+    call  readline
+    ; user input stored in eax
+    
+    ;convert user input from ASCII to integer
+    mov   ecx,0
+    pop   ebx
+    sub  ebx, 1
+    imul ebx, 5
+
+    mov  cl,[eax]                   ; Look at the character in the string
+    sub  cl,'0'
+
+    cmp ecx,5
+    jg invalidInputError
+    cmp ecx,1
+    jl invalidInputError
+    add  ebx,ecx
 
 random:
    MOV AH, 00h  ; get system time
@@ -136,7 +166,39 @@ random:
     call  writeNumber
 
 playAgain:
+    ; PLAY AGAIN?
+        ;; Call charCount(addr)
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;; Returns character count in eax
+    push  offset playAgainDialog
+    call  charCount
+        ;; Call writeline(addr, chars) - push parameter in reverse order
+        ;; Parameters: addr is address of buffer = &addr[0]
+        ;;             chars is the character count in the buffer
+        ;; Returns nothing
+    push  eax
+    push  offset playAgainDialog
+    call  writeline
+
+    ; ACCEPT USER INPUT
+        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+    call  readline
+    ; user input stored in eax
     
+    ; Look at the character in the string
+    mov   ecx,0
+    mov  cl,[eax]
+
+    cmp ecx, 110
+    je exit
+    cmp ecx, 78
+    je exit
+    cmp ecx, 121
+    je gameLoopStart
+    cmp ecx, 89
+    je gameLoopStart
+    jmp playAgain
+     
 exit:
     ret     ; Return to the main program.
 

@@ -1,3 +1,33 @@
+CLARIFIED ASSIGNMENT TEXT:
+Write an assembly program. 
+
+program must prompt user for input
+
+program must process input
+
+program must display output
+
+program does not need to handle unsigned integers
+
+[NOT RELEVANT TO NONCALCULATOR PROGRAM] The program should be able to handle any number upto 65,000.
+
+Requirements to be fulfilled:
+1) Program should have at least five procedures
+a) E.g. main, readline , writeline, atoi, itoa
+2) Each procedure should live in it’s own .asm file
+3) The only external functions the program can use are from
+https://docs.microsoft.com/en-us/windows/console/console-functions:
+a) GetStdHandle
+b) ReadConsole
+c) WriteConsole
+d) ExitProcess
+4) All numbers can be unsigned numbers
+5) Should be able to handle numbers as large as 65000
+6) You will need to use the mul and div instructions to be found on the attached pages.
+7) All the numbers inputted to and outputted will be decimal integers.
+
+
+---
 Program flow/pseudocode:
 
 SETUP
@@ -42,6 +72,8 @@ GAMEOVER
 
 VICTORY
 	display "You win! Your score was " + score
+	display "Play again? y/n"
+
 
 ---
 Tools/Techniques/Problems-to-solve
@@ -56,6 +88,12 @@ DISPLAY
 	Irvine if time
 
 ACCEPT USER INPUT
+
+ADDITIONS
+	How To Section
+	High Scores
+		Need to input a name
+	add a "keep going?" step
 ---
 UML NOTES:
 card:
@@ -82,3 +120,4 @@ Game:
 	victory()
 	playAgain()
 ---
+
