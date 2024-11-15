@@ -25,7 +25,11 @@ invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
 gameOverDialog      byte    "You blew up!",10,10,0
 playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
 finalTerm           byte  10,10,"The value of term ",0
-finalDialog         byte  "is "
+finalDialog         byte  "is ",0
+
+cardArray db 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
+;cardArray db '1','2','3','4','5','6','7','8','9','0','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25'
+;cardArray db 25 dup(0)
 
 .code
 
@@ -130,6 +134,8 @@ random:
     
 
 ;VICTORY
+    mov  ebx, 0
+    mov  bl, [cardArray+8]
     push eax    ;2nd writeNumber parameter
     push ebx    ;1st writeNumber parameter
         ;; Call charCount(addr)

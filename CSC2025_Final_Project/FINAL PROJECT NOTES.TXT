@@ -86,6 +86,8 @@ RANDOM NUMBER GENERATION
 DISPLAY
 	ASCII first
 	Irvine if time
+		add to main first
+		add to others if necessary
 
 ACCEPT USER INPUT
 
@@ -120,4 +122,29 @@ Game:
 	victory()
 	playAgain()
 ---
+ _____________________________
+|     |     |     |     |     |
+|  ?  |  ?  |  ?  |  ?  |  ?  |
+|_____|_____|_____|_____|_____|
+|     |     |     |     |     |
+|  ?  |  ?  |  ?  |  ?  |  ?  |
+|_____|_____|_____|_____|_____|
+|     |     |     |     |     |
+|  ?  |  ?  |  ?  |  ?  |  ?  |
+|_____|_____|_____|_____|_____|
+|     |     |     |     |     |
+|  ?  |  ?  |  ?  |  ?  |  ?  |
+|_____|_____|_____|_____|_____|
+|     |     |     |     |     |
+|  ?  |  ?  |  ?  |  ?  |  ?  |
+|_____|_____|_____|_____|_____|
+---
+printing probably has to be done in gameloop
+
+store other routines elsewhere
+
+---
+
+Interrrupts? (INT)
+	INT 10h ;apparently this should clear the screen but throws exception
 
