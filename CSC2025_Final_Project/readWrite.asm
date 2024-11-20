@@ -4,7 +4,8 @@
 ; Show how to do input and output
 ; Revised: WWC 14 March 2024 Added new module
 ; Revised: WWC 15 March 2024 Added this comment ot force a new commit.
-; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
+; Revised: WWC 13 September 2024 Minor updates for Fall 2024 semester.
+; Revised: SAM 15 November 2024 cleaned up .data
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
 ; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
@@ -31,11 +32,8 @@ extern  _ExitProcess@4: near
 
 .data
 
-msg             byte  "Hello, World", 10, 0   ; ends with line feed (10) and NULL
-prompt          byte  "Please type your name: ", 0 ; ends with string terminator (NULL or 0)
-results         byte  10,"You typed: ", 0
-outputHandle    dword ?           ; Output handle writing to consol. uninitslized
-inputHandle     dword ?           ; Input handle reading from consolee. uninitslized
+outputHandle    dword ?           ; Output handle writing to console. uninitialized
+inputHandle     dword ?           ; Input handle reading from console. uninitialized
 written         dword ?
 INPUT_FLAG      equ   -10
 OUTPUT_FLAG     equ   -11
@@ -45,7 +43,7 @@ readBuffer      byte  1024        DUP(00h)
 writeBuffer     byte  1024        DUP(00h)
 numberBuffer    byte  1024        DUP(00h)
 numCharsToRead  dword 1024
-numCharsRead    dword ?                                   ; Unset or uninitialized
+numCharsRead    dword ?         ; Unset or uninitialized
 
 
 .code
@@ -119,7 +117,7 @@ _writeline:
     push  edx                        ; Restore return address to the stack
 
 
-    ; WriteConsole(handle, &msg[0], numCharsToWrite, &written, 0)
+    ; WriteConsole(handle, &message[0], numCharsToWrite, &written, 0)
     push   0
     push   offset written
     push   eax                       ; return size to the stack for the call to _WriteConsoleA@20 (20 is how many bits are in the call stack)

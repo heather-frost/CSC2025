@@ -4,9 +4,9 @@
 ; gameLoop adapted from fibonacci counter
 
 ; Register usage:
-;     EAX - readWrite procedure communication
-;     EBX - integer user input result for term counting
-;     ECX - helper register: char storage during ASCII conversion
+;     EAX - external routine communication
+;     EBX - 
+;     ECX - 
 
 .model flat
 
@@ -14,22 +14,34 @@ extern writeline: near
 extern readline: near
 extern charCount: near
 extern writeNumber: near
+extern printString: near
 
 .data
 
-; both end with 0 to terminate the string
-prompt              byte  "Opening gameLoop prompt here: OLD PROMPT: Enter a number between 1 and 5: ", 0
-; beginning with 10 sends a line feed character before the text
+rowPrompt              byte  "Which row would you like to flip a card in? [1-5]: ", 0
+columnPrompt              byte  "Which column would you like to flip a card in? [1-5]: ", 0
 gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+
 invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
-gameOverDialog      byte    "You blew up!",10,10,0
+
+gameOverDialog      byte    10,"You blew up!",0
 playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
 finalTerm           byte  10,10,"The value of term ",0
 finalDialog         byte  "is ",0
 
-cardArray db 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
-;cardArray db '1','2','3','4','5','6','7','8','9','0','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25'
-;cardArray db 25 dup(0)
+gameTop             byte  " _____________________________", 10,0
+gameRowTop          byte  "|     |     |     |     |     |", 10, "|",0
+gameFrontSpacer       byte  "  ",0
+gameBackSpacer       byte  " |",0
+gameRowBottom       byte  10,"|_____|_____|_____|_____|_____|", 10,0
+
+victorySpeech             byte 10,10,"VICTORY!!!",10,10,0
+
+cardArray db 25 dup(?)
+facingArray db 25 dup(0)
+
+faceDown    byte "? ",0
+
 
 .code
 
@@ -38,29 +50,91 @@ gameLoop PROC near
 _gameLoop:
 
 Setup:
-;GAME SETUP GOES HERE
+; populates cardArray w/ [0-3]
+   mov ebx, 0
+StaticPopulationLoop:
+   RDRAND EAX
+
+   xor  dx, dx
+   mov  cx, 10    
+   div  cx       ; dx now contains [0-9] remainder of division
+
+   mov ax, dx
+   xor dx, dx
+   mov cx, 2
+   div cx       ; ax now contains [0-4]
+
+   cmp ax, 4
+   je StaticPopulationLoop    ; don't want 4s
+   
+   mov dx, ax
+   mov eax, 0
+   add ax, dx  ;random [0-3] is in eax
+
+   mov [cardArray+ebx], al
+   add ebx, 1
+   cmp ebx, 26
+   jl StaticPopulationLoop
+   mov [facingArray], 0
+
 
 gameLoopStart:
     ; DISPLAY GAME STATE
+    push offset gameTop
+    call printString
+    mov ecx, 0
+    printLoop:
+        push ecx
+        push offset gameRowTop
+        call printString
+        pop ecx
+        mov edx, ecx
+        add edx, 5
+        push edx
+        printSubLoop:
+            push edx
+            push ecx
+            push offset gameFrontSpacer
+            call printString
+            pop ecx
+            push ecx
+            mov ebx, 0
+            mov bl, [facingArray+ecx]
+            cmp ebx, 0
+            jg faceup
 
-    ; DISPLAY GAME STATE [PLACEHOLDER FOR ROW DIALOG]
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
-    push  offset prompt
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset prompt
-    call  writeline
+            push offset faceDown
+            call printString
+            jmp facingDone
 
-    ; ACCEPT USER INPUT
-        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+            faceup:
+            mov bl, [cardArray+ecx]
+            push ebx
+            call writeNumber
+
+            facingDone:
+            push offset gameBackSpacer
+            call printString
+            pop ecx
+            add ecx, 1
+            pop edx
+            cmp ecx, edx
+            jge endPrintSubLoop
+            jmp printSubLoop
+        endPrintSubLoop:
+        pop edx
+        push ecx
+        push offset gameRowBottom
+        call printString
+        pop ecx
+        cmp ecx, 25
+        jl printLoop
+    ;end printLoop
+
+    ;Guess Input:Row
+    push  offset rowPrompt
+    call  printString
     call  readline
-    ; user input stored in eax
     
     ;convert user input from ASCII to integer
     mov   ecx,0
@@ -76,25 +150,10 @@ gameLoopStart:
     jl invalidInputError
     push ebx
 
-    
-    ; DISPLAY GAME STATE [PLACEHOLDER FOR COLUMN DIALOG]
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
-    push  offset prompt
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset prompt
-    call  writeline
-
-    ; ACCEPT USER INPUT
-        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+    ;Guess Input: Column
+    push  offset columnPrompt
+    call  printString
     call  readline
-    ; user input stored in eax
     
     ;convert user input from ASCII to integer
     mov   ecx,0
@@ -111,85 +170,51 @@ gameLoopStart:
     jl invalidInputError
     add  ebx,ecx
 
-random:
-   MOV AH, 00h  ; get system time
+;gameover check
+    mov  eax, 0
+    sub  ebx, 1
+    mov  al, [cardArray+ebx]
+    mov  [facingArray+ebx], 1
+    cmp  eax,0
+    je   gameOver
 
-   mov  ax, dx
-   xor  dx, dx
-   mov  cx, 10    
-   div  cx       ; dx now contains [0-9] remainder of division
+    mov ecx, 0
+victoryCheck:
+    movzx eax, byte ptr [facingArray+ecx]
+    cmp eax, 1
+    je victoryCheckContinue
+    movzx eax, byte ptr [cardArray+ecx]
+    cmp eax, 2
+    jge gameLoopStart
+victoryCheckContinue:
+    add ecx, 1
+    cmp ecx, 25
+    jge victory
+    jmp victoryCheck
 
-   mov ax, dx
-   xor dx, dx
-   mov cx, 2
-   div cx       ; ax now contains [0-4]
-
-   cmp ax, 4
-   je random    ; don't want 4s
-
-   mov dx, ax
-   mov eax, 0
-   add ax, dx  ;random [0-3] is in eax
-
-    
-
-;VICTORY
-    mov  ebx, 0
-    mov  bl, [cardArray+8]
+victory:
     push eax    ;2nd writeNumber parameter
+    add  ebx, 1
     push ebx    ;1st writeNumber parameter
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
     push  offset finalTerm
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset finalTerm
-    call  writeline
-        ;; Call writeNumber(number) - print the ASCII value of a number.
-        ;; Parameter: number is number to be converted to Ascii and printed.
-        ;; Returns nothing
+    call  printString
+
     call  writeNumber
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
+
     push  offset finalDialog
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset finalDialog
-    call  writeline
-        ;; Call writeNumber(number) - print the ASCII value of a number.
-        ;; Parameter: number is number to be converted to Ascii and printed.
-        ;; Returns nothing
+    call  printString
+
     call  writeNumber
+
+    push offset victorySpeech
+    call printString
+
 
 playAgain:
-    ; PLAY AGAIN?
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
     push  offset playAgainDialog
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset playAgainDialog
-    call  writeline
+    call  printString
 
-    ; ACCEPT USER INPUT
-        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
     call  readline
-    ; user input stored in eax
     
     ; Look at the character in the string
     mov   ecx,0
@@ -210,36 +235,16 @@ exit:
 
 gameOver:
     ; Print gameOverDialog
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
     push  offset gameOverDialog
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset gameOverDialog
-    call  writeline
+    call  printString
     jmp playAgain
 ; End gameOver
 
 invalidInputError:
     ; Print invalidInputDialog
-        ;; Call charCount(addr)
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;; Returns character count in eax
     push  offset invalidInputDialog
-    call  charCount
-        ;; Call writeline(addr, chars) - push parameter in reverse order
-        ;; Parameters: addr is address of buffer = &addr[0]
-        ;;             chars is the character count in the buffer
-        ;; Returns nothing
-    push  eax
-    push  offset invalidInputDialog
-    call  writeline
-    jmp _gameLoop
+    call  printString
+    jmp gameLoopStart
 ; End invalidInputError
     
 gameLoop ENDP

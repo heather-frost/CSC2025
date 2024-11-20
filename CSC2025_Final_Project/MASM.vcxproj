@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <MASM Include="gameLoop.asm" />
+    <MASM Include="gameRoutines.asm" />
     <MASM Include="main.asm" />
     <MASM Include="readWrite.asm" />
   </ItemGroup>

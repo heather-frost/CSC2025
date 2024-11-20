@@ -1,32 +1,14 @@
 CLARIFIED ASSIGNMENT TEXT:
-Write an assembly program. 
-
-program must prompt user for input
-
-program must process input
-
-program must display output
-
-program does not need to handle unsigned integers
-
-[NOT RELEVANT TO NONCALCULATOR PROGRAM] The program should be able to handle any number upto 65,000.
-
-Requirements to be fulfilled:
-1) Program should have at least five procedures
-a) E.g. main, readline , writeline, atoi, itoa
-2) Each procedure should live in it’s own .asm file
-3) The only external functions the program can use are from
-https://docs.microsoft.com/en-us/windows/console/console-functions:
-a) GetStdHandle
-b) ReadConsole
-c) WriteConsole
-d) ExitProcess
-4) All numbers can be unsigned numbers
-5) Should be able to handle numbers as large as 65000
-6) You will need to use the mul and div instructions to be found on the attached pages.
-7) All the numbers inputted to and outputted will be decimal integers.
-
-
+program must:
+	prompt user for input
+		all input numbers are decimal integers
+	process that input
+	display output
+		all output numbers are decimal integers
+	have 5+ procedures
+		each procedure should live in its own file
+	may use readWrite.asm from prior assignments
+		no external functions other than those in readWrite.asm
 ---
 Program flow/pseudocode:
 
@@ -73,8 +55,6 @@ GAMEOVER
 VICTORY
 	display "You win! Your score was " + score
 	display "Play again? y/n"
-
-
 ---
 Tools/Techniques/Problems-to-solve
 
@@ -123,28 +103,64 @@ Game:
 	playAgain()
 ---
  _____________________________
-|     |     |     |     |     |
-|  ?  |  ?  |  ?  |  ?  |  ?  |
+|     |     |     |     |     | TOTAL: 
+|  ?  |  ?  |  ?  |  ?  |  ?  | BOMBS:
 |_____|_____|_____|_____|_____|
-|     |     |     |     |     |
-|  ?  |  ?  |  ?  |  ?  |  ?  |
+|     |     |     |     |     | TOTAL:
+|  ?  |  ?  |  ?  |  ?  |  ?  | BOMBS:
 |_____|_____|_____|_____|_____|
-|     |     |     |     |     |
-|  ?  |  ?  |  ?  |  ?  |  ?  |
+|     |     |     |     |     | TOTAL:
+|  ?  |  ?  |  ?  |  ?  |  ?  | BOMBS:
 |_____|_____|_____|_____|_____|
-|     |     |     |     |     |
-|  ?  |  ?  |  ?  |  ?  |  ?  |
+|     |     |     |     |     | TOTAL:
+|  ?  |  ?  |  ?  |  ?  |  ?  | BOMBS:
 |_____|_____|_____|_____|_____|
-|     |     |     |     |     |
-|  ?  |  ?  |  ?  |  ?  |  ?  |
+|     |     |     |     |     | TOTAL:
+|  ?  |  ?  |  ?  |  ?  |  ?  | BOMBS:
 |_____|_____|_____|_____|_____|
+TOT:  TOT:  TOT:  TOT:  TOT:
+BMB:  BMB:  BMB:  BMB:  BMB:  
+
+
+ _______________________________________
+|       |       |       |       |       |TOTAL: 00
+|   ?   |   ?   |   ?   |   ?   |   ?   |BOMBS: 00
+|_______|_______|_______|_______|_______|
+|       |       |       |       |       |TOTAL: 00
+|   ?   |   ?   |   ?   |   ?   |   ?   |BOMBS: 00
+|_______|_______|_______|_______|_______|
+|       |       |       |       |       |TOTAL: 00
+|   ?   |   ?   |   ?   |   ?   |   ?   |BOMBS: 00
+|_______|_______|_______|_______|_______|
+|       |       |       |       |       |TOTAL: 00
+|   ?   |   ?   |   ?   |   ?   |   ?   |BOMBS: 00
+|_______|_______|_______|_______|_______|
+|       |       |       |       |       |TOTAL: 00
+|   ?   |   ?   |   ?   |   ?   |   ?   |BOMBS: 00
+|_______|_______|_______|_______|_______|
+ TOT: 00 TOT: 00 TOT: 00 TOT: 00 TOT: 00
+ BMB: 00 BMB: 00 BMB: 00 BMB: 00 BMB: 00
+
+
+ 
+
+displayGame()
+ 
+
+printing probably has to be done in gameloop?
 ---
-printing probably has to be done in gameloop
-
-store other routines elsewhere
-
----
-
 Interrrupts? (INT)
 	INT 10h ;apparently this should clear the screen but throws exception
+---
+
+?=63
+---
+clear console is in new readWrite.asm in week14
+
+Write game loop in assembly
+	Progressed: need to build scoring loop
+Display game data in console
+	Progressed: need to display row and column info
+Clean up gameloop.asm into clear routines
+	Progressed: Split repeated code blocks into routines in separate files
 

@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/15/24 11:58:03
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/20/24 12:01:28
 gameLoop.asm						     Page 1 - 1
 
 
@@ -8,9 +8,9 @@ gameLoop.asm						     Page 1 - 1
 				; gameLoop adapted from fibonacci counter
 
 				; Register usage:
-				;     EAX - readWrite procedure communication
-				;     EBX - integer user input result for term counting
-				;     ECX - helper register: char storage during ASCII conversion
+				;     EAX - external routine communication
+				;     EBX - 
+				;     ECX - 
 
 				.model flat
 
@@ -18,27 +18,33 @@ gameLoop.asm						     Page 1 - 1
 				extern readline: near
 				extern charCount: near
 				extern writeNumber: near
+				extern printString: near
 
  00000000			.data
 
-				; both end with 0 to terminate the string
- 00000000 4F 70 65 6E 69	prompt              byte  "Opening gameLoop prompt here: OLD PROMPT: Enter a number between 1 and 5: ", 0
-	   6E 67 20 67 61
-	   6D 65 4C 6F 6F
-	   70 20 70 72 6F
-	   6D 70 74 20 68
-	   65 72 65 3A 20
-	   4F 4C 44 20 50
-	   52 4F 4D 50 54
-	   3A 20 45 6E 74
-	   65 72 20 61 20
-	   6E 75 6D 62 65
-	   72 20 62 65 74
-	   77 65 65 6E 20
-	   31 20 61 6E 64
-	   20 35 3A 20 00
-				; beginning with 10 sends a line feed character before the text
- 0000004B 0A 53 74 61 72	gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
+ 00000000 57 68 69 63 68	rowPrompt              byte  "Which row would you like to flip a card in? [1-5]: ", 0
+	   20 72 6F 77 20
+	   77 6F 75 6C 64
+	   20 79 6F 75 20
+	   6C 69 6B 65 20
+	   74 6F 20 66 6C
+	   69 70 20 61 20
+	   63 61 72 64 20
+	   69 6E 3F 20 5B
+	   31 2D 35 5D 3A
+	   20 00
+ 00000034 57 68 69 63 68	columnPrompt              byte  "Which column would you like to flip a card in? [1-5]: ", 0
+	   20 63 6F 6C 75
+	   6D 6E 20 77 6F
+	   75 6C 64 20 79
+	   6F 75 20 6C 69
+	   6B 65 20 74 6F
+	   20 66 6C 69 70
+	   20 61 20 63 61
+	   72 64 20 69 6E
+	   3F 20 5B 31 2D
+	   35 5D 3A 20 00
+ 0000006B 0A 53 74 61 72	gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 	   74 69 6E 67 20
 	   77 69 74 68 20
 	   31 20 61 6E 64
@@ -48,7 +54,8 @@ gameLoop.asm						     Page 1 - 1
 	   72 6F 64 75 63
 	   65 64 20 61 72
 	   65 3A 20 00
- 0000007C 50 6C 65 61 73	invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
+
+ 0000009C 50 6C 65 61 73	invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
 	   65 20 65 6E 74
 	   65 72 20 61 20
 	   76 61 6C 69 64
@@ -56,10 +63,11 @@ gameLoop.asm						     Page 1 - 1
 	   5D 20 69 6E 70
 	   75 74 2E 0A 0A
 	   00
- 000000A0 59 6F 75 20 62	gameOverDialog      byte    "You blew up!",10,10,0
-	   6C 65 77 20 75
-	   70 21 0A 0A 00
- 000000AF 0A 0A 57 6F 75	playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
+
+ 000000C0 0A 59 6F 75 20	gameOverDialog      byte    10,"You blew up!",0
+	   62 6C 65 77 20
+	   75 70 21 00
+ 000000CE 0A 0A 57 6F 75	playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
 	   6C 64 20 79 6F
 	   75 20 6C 69 6B
 	   65 20 74 6F 20
@@ -67,20 +75,50 @@ gameLoop.asm						     Page 1 - 1
 	   61 67 61 69 6E
 	   3F 20 5B 79 2F
 	   6E 5D 20 00
- 000000D6 0A 0A 54 68 65	finalTerm           byte  10,10,"The value of term ",0
+ 000000F5 0A 0A 54 68 65	finalTerm           byte  10,10,"The value of term ",0
 	   20 76 61 6C 75
 	   65 20 6F 66 20
 	   74 65 72 6D 20
 	   00
- 000000EB 69 73 20 00		finalDialog         byte  "is ",0
+ 0000010A 69 73 20 00		finalDialog         byte  "is ",0
 
- 000000EF 01 02 03 04 05	cardArray db 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
-	   06 07 08 09 0A
-	   0B 0C 0D 0E 0F
-	   10 11 12 13 14
-	   15 16 17 18 19
-				;cardArray db '1','2','3','4','5','6','7','8','9','0','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25'
-				;cardArray db 25 dup(0)
+ 0000010E 20 5F 5F 5F 5F	gameTop             byte  " _____________________________", 10,0
+	   5F 5F 5F 5F 5F
+	   5F 5F 5F 5F 5F
+	   5F 5F 5F 5F 5F
+	   5F 5F 5F 5F 5F
+	   5F 5F 5F 5F 5F
+	   0A 00
+ 0000012E 7C 20 20 20 20	gameRowTop          byte  "|     |     |     |     |     |", 10, "|",0
+	   20 7C 20 20 20
+	   20 20 7C 20 20
+	   20 20 20 7C 20
+	   20 20 20 20 7C
+	   20 20 20 20 20
+	   7C 0A 7C 00
+ 00000150 20 20 00		gameFrontSpacer       byte  "  ",0
+ 00000153 20 7C 00		gameBackSpacer       byte  " |",0
+ 00000156 0A 7C 5F 5F 5F	gameRowBottom       byte  10,"|_____|_____|_____|_____|_____|", 10,0
+	   5F 5F 7C 5F 5F
+	   5F 5F 5F 7C 5F
+	   5F 5F 5F 5F 7C
+	   5F 5F 5F 5F 5F
+	   7C 5F 5F 5F 5F
+	   5F 7C 0A 00
+
+ 00000178 0A 0A 56 49 43	victorySpeech             byte 10,10,"VICTORY!!!",10,10,0
+	   54 4F 52 59 21
+	   21 21 0A 0A 00
+
+ 00000187  00000019 [		cardArray db 25 dup(?)
+	    00
+	   ]
+ 000001A0  00000019 [		facingArray db 25 dup(0)
+	    00
+	   ]
+
+ 000001B9 3F 20 00		faceDown    byte "? ",0
+
 
  00000000			.code
 
@@ -89,213 +127,210 @@ gameLoop.asm						     Page 1 - 1
  00000000			_gameLoop:
 
  00000000			Setup:
-				;GAME SETUP GOES HERE
+				; populates cardArray w/ [0-3]
+ 00000000  BB 00000000		   mov ebx, 0
+ 00000005			StaticPopulationLoop:
+ 00000005  0F C7 F0		   RDRAND EAX
 
- 00000000			gameLoopStart:
+ 00000008  66| 33 D2		   xor  dx, dx
+ 0000000B  66| B9 000A		   mov  cx, 10    
+ 0000000F  66| F7 F1		   div  cx       ; dx now contains [0-9] remainder of division
+
+ 00000012  66| 8B C2		   mov ax, dx
+ 00000015  66| 33 D2		   xor dx, dx
+ 00000018  66| B9 0002		   mov cx, 2
+ 0000001C  66| F7 F1		   div cx       ; ax now contains [0-4]
+
+ 0000001F  66| 83 F8 04		   cmp ax, 4
+ 00000023  74 E0		   je StaticPopulationLoop    ; don't want 4s
+				   
+ 00000025  66| 8B D0		   mov dx, ax
+ 00000028  B8 00000000		   mov eax, 0
+ 0000002D  66| 03 C2		   add ax, dx  ;random [0-3] is in eax
+
+ 00000030  88 83 00000187 R	   mov [cardArray+ebx], al
+ 00000036  83 C3 01		   add ebx, 1
+ 00000039  83 FB 1A		   cmp ebx, 26
+ 0000003C  7C C7		   jl StaticPopulationLoop
+ 0000003E  C6 05 000001A0 R	   mov [facingArray], 0
+	   00
+
+
+ 00000045			gameLoopStart:
 				    ; DISPLAY GAME STATE
+ 00000045  68 0000010E R	    push offset gameTop
+ 0000004A  E8 00000000 E	    call printString
+ 0000004F  B9 00000000		    mov ecx, 0
+ 00000054			    printLoop:
+ 00000054  51			        push ecx
+ 00000055  68 0000012E R	        push offset gameRowTop
+ 0000005A  E8 00000000 E	        call printString
+ 0000005F  59			        pop ecx
+ 00000060  8B D1		        mov edx, ecx
+ 00000062  83 C2 05		        add edx, 5
+ 00000065  52			        push edx
+ 00000066			        printSubLoop:
+ 00000066  52			            push edx
+ 00000067  51			            push ecx
+ 00000068  68 00000150 R	            push offset gameFrontSpacer
+ 0000006D  E8 00000000 E	            call printString
+ 00000072  59			            pop ecx
+ 00000073  51			            push ecx
+ 00000074  BB 00000000		            mov ebx, 0
+ 00000079  8A 99 000001A0 R	            mov bl, [facingArray+ecx]
+ 0000007F  83 FB 00		            cmp ebx, 0
+ 00000082  7F 0C		            jg faceup
 
-				    ; DISPLAY GAME STATE [PLACEHOLDER FOR ROW DIALOG]
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 00000000  68 00000000 R	    push  offset prompt
- 00000005  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 0000000A  50			    push  eax
- 0000000B  68 00000000 R	    push  offset prompt
- 00000010  E8 00000000 E	    call  writeline
+ 00000084  68 000001B9 R	            push offset faceDown
+ 00000089  E8 00000000 E	            call printString
+ 0000008E  EB 0C		            jmp facingDone
 
-				    ; ACCEPT USER INPUT
-				        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
- 00000015  E8 00000000 E	    call  readline
-				    ; user input stored in eax
+ 00000090			            faceup:
+ 00000090  8A 99 00000187 R	            mov bl, [cardArray+ecx]
+ 00000096  53			            push ebx
+ 00000097  E8 00000000 E	            call writeNumber
+
+ 0000009C			            facingDone:
+ 0000009C  68 00000153 R	            push offset gameBackSpacer
+ 000000A1  E8 00000000 E	            call printString
+ 000000A6  59			            pop ecx
+ 000000A7  83 C1 01		            add ecx, 1
+ 000000AA  5A			            pop edx
+ 000000AB  3B CA		            cmp ecx, edx
+ 000000AD  7D 02		            jge endPrintSubLoop
+ 000000AF  EB B5		            jmp printSubLoop
+ 000000B1			        endPrintSubLoop:
+ 000000B1  5A			        pop edx
+ 000000B2  51			        push ecx
+ 000000B3  68 00000156 R	        push offset gameRowBottom
+ 000000B8  E8 00000000 E	        call printString
+ 000000BD  59			        pop ecx
+ 000000BE  83 F9 19		        cmp ecx, 25
+ 000000C1  7C 91		        jl printLoop
+				    ;end printLoop
+
+				    ;Guess Input:Row
+ 000000C3  68 00000000 R	    push  offset rowPrompt
+ 000000C8  E8 00000000 E	    call  printString
+ 000000CD  E8 00000000 E	    call  readline
 				    
 				    ;convert user input from ASCII to integer
- 0000001A  B9 00000000		    mov   ecx,0
- 0000001F  BB 00000000		    mov   ebx,0
+ 000000D2  B9 00000000		    mov   ecx,0
+ 000000D7  BB 00000000		    mov   ebx,0
 
- 00000024  8A 08		    mov  cl,[eax]                   ; Look at the character in the string
- 00000026  80 E9 30		    sub  cl,'0'
- 00000029  03 D9		    add  ebx,ecx
+ 000000DC  8A 08		    mov  cl,[eax]                   ; Look at the character in the string
+ 000000DE  80 E9 30		    sub  cl,'0'
+ 000000E1  03 D9		    add  ebx,ecx
 
- 0000002B  83 FB 05		    cmp ebx,5
- 0000002E  0F 8F 0000010E	    jg invalidInputError
- 00000034  83 FB 01		    cmp ebx,1
- 00000037  0F 8C 00000105	    jl invalidInputError
- 0000003D  53			    push ebx
+ 000000E3  83 FB 05		    cmp ebx,5
+ 000000E6  0F 8F 000000F5	    jg invalidInputError
+ 000000EC  83 FB 01		    cmp ebx,1
+ 000000EF  0F 8C 000000EC	    jl invalidInputError
+ 000000F5  53			    push ebx
 
-				    
-				    ; DISPLAY GAME STATE [PLACEHOLDER FOR COLUMN DIALOG]
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 0000003E  68 00000000 R	    push  offset prompt
- 00000043  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 00000048  50			    push  eax
- 00000049  68 00000000 R	    push  offset prompt
- 0000004E  E8 00000000 E	    call  writeline
-
-				    ; ACCEPT USER INPUT
-				        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
- 00000053  E8 00000000 E	    call  readline
-				    ; user input stored in eax
-				    
-				    ;convert user input from ASCII to integer
- 00000058  B9 00000000		    mov   ecx,0
- 0000005D  5B			    pop   ebx
- 0000005E  83 EB 01		    sub  ebx, 1
- 00000061  6B DB 05		    imul ebx, 5
-
- 00000064  8A 08		    mov  cl,[eax]                   ; Look at the character in the string
- 00000066  80 E9 30		    sub  cl,'0'
-
- 00000069  83 F9 05		    cmp ecx,5
- 0000006C  0F 8F 000000D0	    jg invalidInputError
- 00000072  83 F9 01		    cmp ecx,1
- 00000075  0F 8C 000000C7	    jl invalidInputError
- 0000007B  03 D9		    add  ebx,ecx
-
- 0000007D			random:
- 0000007D  B4 00		   MOV AH, 00h  ; get system time
-
- 0000007F  66| 8B C2		   mov  ax, dx
- 00000082  66| 33 D2		   xor  dx, dx
- 00000085  66| B9 000A		   mov  cx, 10    
- 00000089  66| F7 F1		   div  cx       ; dx now contains [0-9] remainder of division
-
- 0000008C  66| 8B C2		   mov ax, dx
- 0000008F  66| 33 D2		   xor dx, dx
- 00000092  66| B9 0002		   mov cx, 2
- 00000096  66| F7 F1		   div cx       ; ax now contains [0-4]
-
- 00000099  66| 83 F8 04		   cmp ax, 4
- 0000009D  74 DE		   je random    ; don't want 4s
-
- 0000009F  66| 8B D0		   mov dx, ax
- 000000A2  B8 00000000		   mov eax, 0
- 000000A7  66| 03 C2		   add ax, dx  ;random [0-3] is in eax
-
-				    
-
-				;VICTORY
- 000000AA  BB 00000000		    mov  ebx, 0
- 000000AF  8A 1D 000000F7 R	    mov  bl, [cardArray+8]
- 000000B5  50			    push eax    ;2nd writeNumber parameter
- 000000B6  53			    push ebx    ;1st writeNumber parameter
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 000000B7  68 000000D6 R	    push  offset finalTerm
- 000000BC  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 000000C1  50			    push  eax
- 000000C2  68 000000D6 R	    push  offset finalTerm
- 000000C7  E8 00000000 E	    call  writeline
-				        ;; Call writeNumber(number) - print the ASCII value of a number.
-				        ;; Parameter: number is number to be converted to Ascii and printed.
-				        ;; Returns nothing
- 000000CC  E8 00000000 E	    call  writeNumber
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 000000D1  68 000000EB R	    push  offset finalDialog
- 000000D6  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 000000DB  50			    push  eax
- 000000DC  68 000000EB R	    push  offset finalDialog
- 000000E1  E8 00000000 E	    call  writeline
-				        ;; Call writeNumber(number) - print the ASCII value of a number.
-				        ;; Parameter: number is number to be converted to Ascii and printed.
-				        ;; Returns nothing
- 000000E6  E8 00000000 E	    call  writeNumber
-
- 000000EB			playAgain:
-				    ; PLAY AGAIN?
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 000000EB  68 000000AF R	    push  offset playAgainDialog
- 000000F0  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 000000F5  50			    push  eax
- 000000F6  68 000000AF R	    push  offset playAgainDialog
- 000000FB  E8 00000000 E	    call  writeline
-
-				    ; ACCEPT USER INPUT
-				        ;; Call readline() - No Parameters, Returns ptr to buffer in eax
+				    ;Guess Input: Column
+ 000000F6  68 00000034 R	    push  offset columnPrompt
+ 000000FB  E8 00000000 E	    call  printString
  00000100  E8 00000000 E	    call  readline
-				    ; user input stored in eax
+				    
+				    ;convert user input from ASCII to integer
+ 00000105  B9 00000000		    mov   ecx,0
+ 0000010A  5B			    pop   ebx
+ 0000010B  83 EB 01		    sub  ebx, 1
+ 0000010E  6B DB 05		    imul ebx, 5
+
+ 00000111  8A 08		    mov  cl,[eax]                   ; Look at the character in the string
+ 00000113  80 E9 30		    sub  cl,'0'
+
+ 00000116  83 F9 05		    cmp ecx,5
+ 00000119  0F 8F 000000C2	    jg invalidInputError
+ 0000011F  83 F9 01		    cmp ecx,1
+ 00000122  0F 8C 000000B9	    jl invalidInputError
+ 00000128  03 D9		    add  ebx,ecx
+
+				;gameover check
+ 0000012A  B8 00000000		    mov  eax, 0
+ 0000012F  83 EB 01		    sub  ebx, 1
+ 00000132  8A 83 00000187 R	    mov  al, [cardArray+ebx]
+ 00000138  C6 83 000001A0 R	    mov  [facingArray+ebx], 1
+	   01
+ 0000013F  83 F8 00		    cmp  eax,0
+ 00000142  0F 84 0000008D	    je   gameOver
+
+ 00000148  B9 00000000		    mov ecx, 0
+ 0000014D			victoryCheck:
+ 0000014D  0F B6 81		    movzx eax, byte ptr [facingArray+ecx]
+	   000001A0 R
+ 00000154  83 F8 01		    cmp eax, 1
+ 00000157  74 10		    je victoryCheckContinue
+ 00000159  0F B6 81		    movzx eax, byte ptr [cardArray+ecx]
+	   00000187 R
+ 00000160  83 F8 02		    cmp eax, 2
+ 00000163  0F 8D FFFFFEDC	    jge gameLoopStart
+ 00000169			victoryCheckContinue:
+ 00000169  83 C1 01		    add ecx, 1
+ 0000016C  83 F9 19		    cmp ecx, 25
+ 0000016F  7D 02		    jge victory
+ 00000171  EB DA		    jmp victoryCheck
+
+ 00000173			victory:
+ 00000173  50			    push eax    ;2nd writeNumber parameter
+ 00000174  83 C3 01		    add  ebx, 1
+ 00000177  53			    push ebx    ;1st writeNumber parameter
+ 00000178  68 000000F5 R	    push  offset finalTerm
+ 0000017D  E8 00000000 E	    call  printString
+
+ 00000182  E8 00000000 E	    call  writeNumber
+
+ 00000187  68 0000010A R	    push  offset finalDialog
+ 0000018C  E8 00000000 E	    call  printString
+
+ 00000191  E8 00000000 E	    call  writeNumber
+
+ 00000196  68 00000178 R	    push offset victorySpeech
+ 0000019B  E8 00000000 E	    call printString
+
+
+ 000001A0			playAgain:
+ 000001A0  68 000000CE R	    push  offset playAgainDialog
+ 000001A5  E8 00000000 E	    call  printString
+
+ 000001AA  E8 00000000 E	    call  readline
 				    
 				    ; Look at the character in the string
- 00000105  B9 00000000		    mov   ecx,0
- 0000010A  8A 08		    mov  cl,[eax]
+ 000001AF  B9 00000000		    mov   ecx,0
+ 000001B4  8A 08		    mov  cl,[eax]
 
- 0000010C  83 F9 6E		    cmp ecx, 110
- 0000010F  74 19		    je exit
- 00000111  83 F9 4E		    cmp ecx, 78
- 00000114  74 14		    je exit
- 00000116  83 F9 79		    cmp ecx, 121
- 00000119  0F 84 FFFFFEE1	    je gameLoopStart
- 0000011F  83 F9 59		    cmp ecx, 89
- 00000122  0F 84 FFFFFED8	    je gameLoopStart
- 00000128  EB C1		    jmp playAgain
+ 000001B6  83 F9 6E		    cmp ecx, 110
+ 000001B9  74 19		    je exit
+ 000001BB  83 F9 4E		    cmp ecx, 78
+ 000001BE  74 14		    je exit
+ 000001C0  83 F9 79		    cmp ecx, 121
+ 000001C3  0F 84 FFFFFE7C	    je gameLoopStart
+ 000001C9  83 F9 59		    cmp ecx, 89
+ 000001CC  0F 84 FFFFFE73	    je gameLoopStart
+ 000001D2  EB CC		    jmp playAgain
 				     
- 0000012A			exit:
- 0000012A  C3			    ret     ; Return to the main program.
+ 000001D4			exit:
+ 000001D4  C3			    ret     ; Return to the main program.
 
- 0000012B			gameOver:
+ 000001D5			gameOver:
 				    ; Print gameOverDialog
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 0000012B  68 000000A0 R	    push  offset gameOverDialog
- 00000130  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 00000135  50			    push  eax
- 00000136  68 000000A0 R	    push  offset gameOverDialog
- 0000013B  E8 00000000 E	    call  writeline
- 00000140  EB A9		    jmp playAgain
+ 000001D5  68 000000C0 R	    push  offset gameOverDialog
+ 000001DA  E8 00000000 E	    call  printString
+ 000001DF  EB BF		    jmp playAgain
 				; End gameOver
 
- 00000142			invalidInputError:
+ 000001E1			invalidInputError:
 				    ; Print invalidInputDialog
-				        ;; Call charCount(addr)
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;; Returns character count in eax
- 00000142  68 0000007C R	    push  offset invalidInputDialog
- 00000147  E8 00000000 E	    call  charCount
-				        ;; Call writeline(addr, chars) - push parameter in reverse order
-				        ;; Parameters: addr is address of buffer = &addr[0]
-				        ;;             chars is the character count in the buffer
-				        ;; Returns nothing
- 0000014C  50			    push  eax
- 0000014D  68 0000007C R	    push  offset invalidInputDialog
- 00000152  E8 00000000 E	    call  writeline
- 00000157  E9 FFFFFEA4		    jmp _gameLoop
+ 000001E1  68 0000009C R	    push  offset invalidInputDialog
+ 000001E6  E8 00000000 E	    call  printString
+ 000001EB  E9 FFFFFE55		    jmp gameLoopStart
 				; End invalidInputError
 				    
- 0000015C			gameLoop ENDP
+ 000001F0			gameLoop ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/15/24 11:58:03
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/20/24 12:01:28
 gameLoop.asm						     Symbols 2 - 1
 
 
@@ -306,23 +341,31 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000108 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000015C Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000001BC Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000001F0 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-gameLoop . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000015C Public
+gameLoop . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000001F0 Public
   _gameLoop  . . . . . . . . . .	L Near	 00000000 _TEXT	
   Setup  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
-  gameLoopStart  . . . . . . . .	L Near	 00000000 _TEXT	
-  random . . . . . . . . . . . .	L Near	 0000007D _TEXT	
-  playAgain  . . . . . . . . . .	L Near	 000000EB _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 0000012A _TEXT	
-  gameOver . . . . . . . . . . .	L Near	 0000012B _TEXT	
-  invalidInputError  . . . . . .	L Near	 00000142 _TEXT	
+  StaticPopulationLoop . . . . .	L Near	 00000005 _TEXT	
+  gameLoopStart  . . . . . . . .	L Near	 00000045 _TEXT	
+  printLoop  . . . . . . . . . .	L Near	 00000054 _TEXT	
+  printSubLoop . . . . . . . . .	L Near	 00000066 _TEXT	
+  faceup . . . . . . . . . . . .	L Near	 00000090 _TEXT	
+  facingDone . . . . . . . . . .	L Near	 0000009C _TEXT	
+  endPrintSubLoop  . . . . . . .	L Near	 000000B1 _TEXT	
+  victoryCheck . . . . . . . . .	L Near	 0000014D _TEXT	
+  victoryCheckContinue . . . . .	L Near	 00000169 _TEXT	
+  victory  . . . . . . . . . . .	L Near	 00000173 _TEXT	
+  playAgain  . . . . . . . . . .	L Near	 000001A0 _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 000001D4 _TEXT	
+  gameOver . . . . . . . . . . .	L Near	 000001D5 _TEXT	
+  invalidInputError  . . . . . .	L Near	 000001E1 _TEXT	
 
 
 Symbols:
@@ -338,16 +381,26 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-cardArray  . . . . . . . . . . .	Byte	 000000EF _DATA	
+cardArray  . . . . . . . . . . .	Byte	 00000187 _DATA	
 charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
-finalDialog  . . . . . . . . . .	Byte	 000000EB _DATA	
-finalTerm  . . . . . . . . . . .	Byte	 000000D6 _DATA	
-gameLoopDialog . . . . . . . . .	Byte	 0000004B _DATA	
-gameOverDialog . . . . . . . . .	Byte	 000000A0 _DATA	
-invalidInputDialog . . . . . . .	Byte	 0000007C _DATA	
-playAgainDialog  . . . . . . . .	Byte	 000000AF _DATA	
-prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+columnPrompt . . . . . . . . . .	Byte	 00000034 _DATA	
+faceDown . . . . . . . . . . . .	Byte	 000001B9 _DATA	
+facingArray  . . . . . . . . . .	Byte	 000001A0 _DATA	
+finalDialog  . . . . . . . . . .	Byte	 0000010A _DATA	
+finalTerm  . . . . . . . . . . .	Byte	 000000F5 _DATA	
+gameBackSpacer . . . . . . . . .	Byte	 00000153 _DATA	
+gameFrontSpacer  . . . . . . . .	Byte	 00000150 _DATA	
+gameLoopDialog . . . . . . . . .	Byte	 0000006B _DATA	
+gameOverDialog . . . . . . . . .	Byte	 000000C0 _DATA	
+gameRowBottom  . . . . . . . . .	Byte	 00000156 _DATA	
+gameRowTop . . . . . . . . . . .	Byte	 0000012E _DATA	
+gameTop  . . . . . . . . . . . .	Byte	 0000010E _DATA	
+invalidInputDialog . . . . . . .	Byte	 0000009C _DATA	
+playAgainDialog  . . . . . . . .	Byte	 000000CE _DATA	
+printString  . . . . . . . . . .	L Near	 00000000 FLAT	External
 readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+rowPrompt  . . . . . . . . . . .	Byte	 00000000 _DATA	
+victorySpeech  . . . . . . . . .	Byte	 00000178 _DATA	
 writeNumber  . . . . . . . . . .	L Near	 00000000 FLAT	External
 writeline  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 

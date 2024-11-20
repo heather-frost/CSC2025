@@ -24,5 +24,8 @@
     <MASM Include="gameLoop.asm">
       <Filter>Source Files</Filter>
     </MASM>
+    <MASM Include="gameRoutines.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

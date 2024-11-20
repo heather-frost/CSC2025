@@ -3,10 +3,10 @@
 ; 29 February 2024
 ; Controls the flow of the program
 ; Revised: WWC 14 March 2024 Added new module
-; Revised 15 March 2024 Added this comment ot force a new commit.
+; Revised: 15 March 2024 Added this comment to force a new commit.
 ; Revised: WWC 25 April 2024 Split out the console control into second file.
 ; Revised: WWC 13 September 2024 Minore updates for Fall 2024 semester.
-; Revised; SAM 04 October 2024 tweaked to work with fibonacci.asm instead of start.asm
+; Revised: SAM 04 October 2024 tweaked to work with fibonacci.asm instead of start.asm
 ; Reivsed: SAM 01 November 2024 adapted for final project
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
