@@ -156,11 +156,18 @@ Interrrupts? (INT)
 ?=63
 ---
 clear console is in new readWrite.asm in week14
+---
 
-Write game loop in assembly
-	Progressed: need to build scoring loop
-Display game data in console
-	Progressed: need to display row and column info
-Clean up gameloop.asm into clear routines
-	Progressed: Split repeated code blocks into routines in separate files
-
+i=0
+rowInfoLoop:
+	cmp cardArray[i], 0
+	jg else
+		rowBombs +1
+		jmp increment
+	else:
+		rowTotal + cardArray[i]
+	increment:
+		i++
+		cmp i, 25
+		jl rowInfoLoop
+		;else, continue from loop

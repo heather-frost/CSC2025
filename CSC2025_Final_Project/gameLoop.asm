@@ -18,27 +18,33 @@ extern printString: near
 
 .data
 
-rowPrompt              byte  "Which row would you like to flip a card in? [1-5]: ", 0
-columnPrompt              byte  "Which column would you like to flip a card in? [1-5]: ", 0
+rowPrompt               byte  "Which row would you like to flip a card in? [1-5]: ", 0
+columnPrompt               byte  "Which column would you like to flip a card in? [1-5]: ", 0
 gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
 
 invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
 
-gameOverDialog      byte    10,"You blew up!",0
+gameOverDialog       byte    10,"You blew up!",0
 playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
-finalTerm           byte  10,10,"The value of term ",0
-finalDialog         byte  "is ",0
+finalTerm            byte  10,10,"The value of term ",0
+finalDialog          byte  "is ",0
 
-gameTop             byte  " _____________________________", 10,0
-gameRowTop          byte  "|     |     |     |     |     |", 10, "|",0
-gameFrontSpacer       byte  "  ",0
-gameBackSpacer       byte  " |",0
-gameRowBottom       byte  10,"|_____|_____|_____|_____|_____|", 10,0
+gameTop              byte  " _______________________________________", 10,0
+gameRowTop           byte  "|       |       |       |       |       |TOTAL: ",0
+gameRowTotalAppend   byte 10, "|",0
+gameFrontSpacer        byte  "   ",0
+gameBackSpacer        byte  "  |",0
+gameRowBombs         byte   "BOMBS: ",0
+gameRowBottom        byte  10,"|_______|_______|_______|_______|_______|", 10,0
 
-victorySpeech             byte 10,10,"VICTORY!!!",10,10,0
+victorySpeech              byte 10,10,"VICTORY!!!",10,10,0
 
 cardArray db 25 dup(?)
 facingArray db 25 dup(0)
+rowTotals    db  5 dup(0)
+rowBombs    db  5 dup(0)
+columnTotals    db  5 dup(0)
+columnBombs    db  5 dup(0)
 
 faceDown    byte "? ",0
 
@@ -51,31 +57,46 @@ _gameLoop:
 
 Setup:
 ; populates cardArray w/ [0-3]
-   mov ebx, 0
+    mov ebx, 0
 StaticPopulationLoop:
-   RDRAND EAX
+    RDRAND EAX
 
-   xor  dx, dx
-   mov  cx, 10    
-   div  cx       ; dx now contains [0-9] remainder of division
+    xor  dx, dx
+    mov  cx, 10    
+    div  cx        ; dx now contains [0-9] remainder of division
 
-   mov ax, dx
-   xor dx, dx
-   mov cx, 2
-   div cx       ; ax now contains [0-4]
+    mov ax, dx
+    xor dx, dx
+    mov cx, 2
+    div cx        ; ax now contains [0-4]
 
-   cmp ax, 4
-   je StaticPopulationLoop    ; don't want 4s
-   
-   mov dx, ax
-   mov eax, 0
-   add ax, dx  ;random [0-3] is in eax
+    cmp ax, 4
+    je StaticPopulationLoop    ; don't want 4s
+    
+    mov dx, ax
+    mov eax, 0
+    add ax, dx  ;random [0-3] is in eax
 
-   mov [cardArray+ebx], al
-   add ebx, 1
-   cmp ebx, 26
-   jl StaticPopulationLoop
-   mov [facingArray], 0
+    mov [cardArray+ebx], al
+    add ebx, 1
+    cmp ebx, 26
+    jl StaticPopulationLoop
+    mov [facingArray], 0
+
+    mov ebx, 0
+rowInfoLoop:
+    movzx eax, [cardArray+ebx]
+    cmp eax, 0
+    jg rowTotalAdd
+    add [rowBombs], 1
+    jmp rowIncrement
+    rowTotalAdd:
+    add [rowTotals], al
+    rowIncrement:
+    add ebx, 1
+    cmp ebx, 5
+    jl rowInfoLoop
+;end rowInfoLoop
 
 
 gameLoopStart:
@@ -87,43 +108,57 @@ gameLoopStart:
         push ecx
         push offset gameRowTop
         call printString
+        push eax
+        movzx eax, [rowTotals]
+        push eax
+        call writeNumber
+        pop eax
+        push offset gameRowTotalAppend
+        call printString
         pop ecx
         mov edx, ecx
         add edx, 5
         push edx
         printSubLoop:
-            push edx
-            push ecx
-            push offset gameFrontSpacer
-            call printString
-            pop ecx
-            push ecx
-            mov ebx, 0
-            mov bl, [facingArray+ecx]
-            cmp ebx, 0
-            jg faceup
+             push edx
+             push ecx
+             push offset gameFrontSpacer
+             call printString
+             pop ecx
+             push ecx
+             mov ebx, 0
+             mov bl, [facingArray+ecx]
+             cmp ebx, 0
+             jg faceup
 
-            push offset faceDown
-            call printString
-            jmp facingDone
+             push offset faceDown
+             call printString
+             jmp facingDone
 
-            faceup:
-            mov bl, [cardArray+ecx]
-            push ebx
-            call writeNumber
+             faceup:
+             mov bl, [cardArray+ecx]
+             push ebx
+             call writeNumber
 
-            facingDone:
-            push offset gameBackSpacer
-            call printString
-            pop ecx
-            add ecx, 1
-            pop edx
-            cmp ecx, edx
-            jge endPrintSubLoop
-            jmp printSubLoop
+             facingDone:
+             push offset gameBackSpacer
+             call printString
+             pop ecx
+             add ecx, 1
+             pop edx
+             cmp ecx, edx
+             jge endPrintSubLoop
+             jmp printSubLoop
         endPrintSubLoop:
         pop edx
         push ecx
+        push offset gameRowBombs
+        call printString
+        push eax
+        movzx eax, [rowBombs]
+        push eax
+        call writeNumber
+        pop eax
         push offset gameRowBottom
         call printString
         pop ecx
@@ -137,10 +172,10 @@ gameLoopStart:
     call  readline
     
     ;convert user input from ASCII to integer
-    mov   ecx,0
-    mov   ebx,0
+    mov    ecx,0
+    mov    ebx,0
 
-    mov  cl,[eax]                   ; Look at the character in the string
+    mov  cl,[eax]                    ; Look at the character in the string
     sub  cl,'0'
     add  ebx,ecx
 
@@ -156,12 +191,12 @@ gameLoopStart:
     call  readline
     
     ;convert user input from ASCII to integer
-    mov   ecx,0
-    pop   ebx
+    mov    ecx,0
+    pop    ebx
     sub  ebx, 1
     imul ebx, 5
 
-    mov  cl,[eax]                   ; Look at the character in the string
+    mov  cl,[eax]                    ; Look at the character in the string
     sub  cl,'0'
 
     cmp ecx,5
@@ -176,7 +211,7 @@ gameLoopStart:
     mov  al, [cardArray+ebx]
     mov  [facingArray+ebx], 1
     cmp  eax,0
-    je   gameOver
+    je    gameOver
 
     mov ecx, 0
 victoryCheck:
@@ -217,7 +252,7 @@ playAgain:
     call  readline
     
     ; Look at the character in the string
-    mov   ecx,0
+    mov    ecx,0
     mov  cl,[eax]
 
     cmp ecx, 110
