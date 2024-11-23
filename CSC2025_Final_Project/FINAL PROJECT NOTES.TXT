@@ -158,6 +158,23 @@ Interrrupts? (INT)
 clear console is in new readWrite.asm in week14
 ---
 
+prevent choosing faceup cards
+
+rowInfoLoop:
+    movzx eax, [cardArray+ebx]
+    cmp eax, 0
+    jg rowTotalAdd
+    add [rowBombs], 1
+    jmp rowIncrement
+    rowTotalAdd:
+    add [rowTotals], al
+    rowIncrement:
+    add ebx, 1
+    cmp ebx, 5
+    jl rowInfoLoop
+;end rowInfoLoop
+
+
 i=0
 rowInfoLoop:
 	cmp cardArray[i], 0
@@ -171,3 +188,30 @@ rowInfoLoop:
 		cmp i, 25
 		jl rowInfoLoop
 		;else, continue from loop
+
+---
+POTENTIAL FOR COLUMN FX???
+
+    mov ebx, 0
+    mov ecx, 0
+rowInfoLoop:
+    push ecx
+    mov ecx, 0
+    rowInfoInnerLoop:
+    movzx eax, [cardArray+ebx]
+    cmp eax, 0
+    jg rowTotalAdd
+        add [rowBombs], 1
+        jmp rowIncrement
+    rowTotalAdd:
+        add [rowTotals], al
+    rowIncrement:
+        add ebx, 1
+        add ecx, 1
+        cmp ecx, 5
+        jl rowInfoInnerLoop
+    pop ecx
+    add ecx, 1
+    cmp ecx, 5
+    jl rowInfoLoop
+;end rowInfoLoop

@@ -84,17 +84,27 @@ StaticPopulationLoop:
     mov [facingArray], 0
 
     mov ebx, 0
+    mov ecx, 0
 rowInfoLoop:
-    movzx eax, [cardArray+ebx]
-    cmp eax, 0
-    jg rowTotalAdd
-    add [rowBombs], 1
-    jmp rowIncrement
-    rowTotalAdd:
-    add [rowTotals], al
-    rowIncrement:
-    add ebx, 1
-    cmp ebx, 5
+    mov eax, 0
+    rowInfoInnerLoop:
+        push eax
+        movzx eax, [cardArray+ebx]
+        cmp eax, 0
+        jg rowTotalAdd
+            add [rowBombs+ecx], 1
+            jmp rowIncrement
+        rowTotalAdd:
+            add [rowTotals+ecx], al
+        rowIncrement:
+            add ebx, 1
+            pop eax
+            add eax, 1
+            cmp eax, 5
+            jl rowInfoInnerLoop
+    ;end inner loop
+    add ecx, 1
+    cmp ecx, 5
     jl rowInfoLoop
 ;end rowInfoLoop
 
@@ -108,11 +118,20 @@ gameLoopStart:
         push ecx
         push offset gameRowTop
         call printString
+        pop eax
         push eax
-        movzx eax, [rowTotals]
+        push ecx
+        push edx
+        mov edx, 0
+        mov ecx, 5
+        div ecx
+        pop edx
+        pop ecx
+;        sub eax, 1
+        movzx eax, [rowTotals+eax]
+;        movzx eax, [rowTotals]
         push eax
         call writeNumber
-        pop eax
         push offset gameRowTotalAppend
         call printString
         pop ecx
@@ -154,11 +173,20 @@ gameLoopStart:
         push ecx
         push offset gameRowBombs
         call printString
+        pop eax
         push eax
-        movzx eax, [rowBombs]
+        push ecx
+        push edx
+        mov edx, 0
+        mov ecx, 5
+        div ecx
+        pop edx
+        pop ecx
+        sub eax, 1
+        movzx eax, [rowBombs+eax]
+;        movzx eax, [rowBombs]
         push eax
         call writeNumber
-        pop eax
         push offset gameRowBottom
         call printString
         pop ecx
