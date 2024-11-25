@@ -194,24 +194,24 @@ POTENTIAL FOR COLUMN FX???
 
     mov ebx, 0
     mov ecx, 0
-rowInfoLoop:
+columnInfoLoop:
     push ecx
     mov ecx, 0
-    rowInfoInnerLoop:
+    columnInfoInnerLoop:
     movzx eax, [cardArray+ebx]
     cmp eax, 0
-    jg rowTotalAdd
-        add [rowBombs], 1
-        jmp rowIncrement
-    rowTotalAdd:
-        add [rowTotals], al
-    rowIncrement:
+    jg columnTotalAdd
+        add [columnBombs], 1
+        jmp columnIncrement
+    columnTotalAdd:
+        add [columnTotals], al
+    columnIncrement:
         add ebx, 1
         add ecx, 1
         cmp ecx, 5
-        jl rowInfoInnerLoop
+        jl columnInfoInnerLoop
     pop ecx
     add ecx, 1
     cmp ecx, 5
-    jl rowInfoLoop
-;end rowInfoLoop
+    jl columnInfoLoop
+;end columnInfoLoop

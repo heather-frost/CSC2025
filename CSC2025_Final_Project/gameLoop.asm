@@ -34,17 +34,21 @@ gameRowTop           byte  "|       |       |       |       |       |TOTAL: ",0
 gameRowTotalAppend   byte 10, "|",0
 gameFrontSpacer        byte  "   ",0
 gameBackSpacer        byte  "  |",0
-gameRowBombs         byte   "BOMBS: ",0
+gameRowBombs         byte   "BOMBS: 0",0
 gameRowBottom        byte  10,"|_______|_______|_______|_______|_______|", 10,0
+gameColumnTotals    byte    " TOT: ",0
+gameColumnBombs     byte    " BMB: 0",0
+lineEnd             byte    10,0
+leadingZero         byte    "0",0
 
 victorySpeech              byte 10,10,"VICTORY!!!",10,10,0
 
 cardArray db 25 dup(?)
 facingArray db 25 dup(0)
-rowTotals    db  5 dup(0)
-rowBombs    db  5 dup(0)
-columnTotals    db  5 dup(0)
-columnBombs    db  5 dup(0)
+rowTotals    db  5 dup(?)
+rowBombs    db  5 dup(?)
+columnTotals    db  5 dup(?)
+columnBombs    db  5 dup(?)
 
 faceDown    byte "? ",0
 
@@ -79,14 +83,17 @@ StaticPopulationLoop:
 
     mov [cardArray+ebx], al
     add ebx, 1
-    cmp ebx, 26
+    cmp ebx, 25
     jl StaticPopulationLoop
-    mov [facingArray], 0
 
     mov ebx, 0
     mov ecx, 0
 rowInfoLoop:
     mov eax, 0
+    mov [rowBombs+ecx], 0
+    mov [rowTotals+ecx], 0
+    mov [columnBombs+ecx], 0
+    mov [columnTotals+ecx], 0
     rowInfoInnerLoop:
         push eax
         movzx eax, [cardArray+ebx]
@@ -108,6 +115,29 @@ rowInfoLoop:
     jl rowInfoLoop
 ;end rowInfoLoop
 
+    mov ebx, 0
+    mov ecx, 0
+columnInfoLoop:
+    push ecx
+    mov ecx, 0
+    columnInfoInnerLoop:
+    movzx eax, [cardArray+ebx]
+    cmp eax, 0
+    jg columnTotalAdd
+        add [columnBombs+ecx], 1
+        jmp columnIncrement
+    columnTotalAdd:
+        add [columnTotals+ecx], al
+    columnIncrement:
+        add ebx, 1
+        add ecx, 1
+        cmp ecx, 5
+        jl columnInfoInnerLoop
+    pop ecx
+    add ecx, 1
+    cmp ecx, 5
+    jl columnInfoLoop
+;end columnInfoLoop
 
 gameLoopStart:
     ; DISPLAY GAME STATE
@@ -127,9 +157,20 @@ gameLoopStart:
         div ecx
         pop edx
         pop ecx
-;        sub eax, 1
         movzx eax, [rowTotals+eax]
-;        movzx eax, [rowTotals]
+        cmp eax, 10
+        jge printRowTot
+        push eax
+        push offset leadingZero
+        call printString
+        pop  eax
+        cmp eax, 0
+        jg  printRowTot
+        push eax
+        push offset leadingZero
+        call printString
+        pop  eax
+        printRowTot:
         push eax
         call writeNumber
         push offset gameRowTotalAppend
@@ -184,8 +225,12 @@ gameLoopStart:
         pop ecx
         sub eax, 1
         movzx eax, [rowBombs+eax]
-;        movzx eax, [rowBombs]
         push eax
+        cmp eax, 0
+        jg printRowBmb
+        push offset leadingZero
+        call printString
+        printRowBmb:
         call writeNumber
         push offset gameRowBottom
         call printString
@@ -193,7 +238,67 @@ gameLoopStart:
         cmp ecx, 25
         jl printLoop
     ;end printLoop
+    
+    mov ebx, 0
+    mov ecx, 0
+    columnTotalsPrint:
+        push ecx
+        push offset gameColumnTotals
+        call printString
+        pop ecx
+        push ecx
+        movzx eax, [columnTotals+ecx]
+        cmp eax, 10
+        jge printColTot
+        push eax
+        push offset leadingZero
+        call printString
+        pop  eax
+        cmp eax, 0
+        jg  printColTot
+        push eax
+        push offset leadingZero
+        call printString
+        pop  eax
+        printColTot:
+        push eax
+        call writeNumber
+        pop ecx
+        add ecx, 1
+        cmp ecx, 5
+        jge columnBombsPrintSetup
+        jmp columnTotalsPrint
 
+    columnBombsPrintSetup:
+        push offset lineEnd
+        call printString
+        mov ebx, 0
+        mov ecx, 0
+    columnBombsPrint:
+        push ecx
+        push offset gameColumnBombs
+        call printString
+        pop ecx
+        push ecx
+        movzx eax, [columnBombs+ecx]
+        push eax
+        cmp eax, 0
+        jg printColBmb
+        push offset leadingZero
+        call printString
+        printColBmb:
+        call writeNumber
+        pop ecx
+        add ecx, 1
+        cmp ecx, 5
+        jge gamePrintEnd
+        jmp columnBombsPrint
+
+gamePrintEnd:
+    push offset lineEnd
+    call printString
+
+guessInput:
     ;Guess Input:Row
     push  offset rowPrompt
     call  printString
@@ -288,9 +393,9 @@ playAgain:
     cmp ecx, 78
     je exit
     cmp ecx, 121
-    je gameLoopStart
+    je setup
     cmp ecx, 89
-    je gameLoopStart
+    je setup
     jmp playAgain
      
 exit:
