@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/25/24 10:41:02
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/26/24 11:01:17
 gameLoop.asm						     Page 1 - 1
 
 
@@ -19,6 +19,8 @@ gameLoop.asm						     Page 1 - 1
 				extern charCount: near
 				extern writeNumber: near
 				extern printString: near
+				extern clearConsole@0: near
+				extern random: near
 
  00000000			.data
 
@@ -44,18 +46,7 @@ gameLoop.asm						     Page 1 - 1
 	   72 64 20 69 6E
 	   3F 20 5B 31 2D
 	   35 5D 3A 20 00
- 0000006B 0A 53 74 61 72	gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-	   74 69 6E 67 20
-	   77 69 74 68 20
-	   31 20 61 6E 64
-	   20 32 2C 20 74
-	   68 65 20 74 65
-	   72 6D 73 20 70
-	   72 6F 64 75 63
-	   65 64 20 61 72
-	   65 3A 20 00
-
- 0000009C 50 6C 65 61 73	invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
+ 0000006B 50 6C 65 61 73	invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
 	   65 20 65 6E 74
 	   65 72 20 61 20
 	   76 61 6C 69 64
@@ -63,11 +54,10 @@ gameLoop.asm						     Page 1 - 1
 	   5D 20 69 6E 70
 	   75 74 2E 0A 0A
 	   00
-
- 000000C0 0A 59 6F 75 20	gameOverDialog       byte    10,"You blew up!",0
+ 0000008F 0A 59 6F 75 20	gameOverDialog       byte    10,"You blew up!",0
 	   62 6C 65 77 20
 	   75 70 21 00
- 000000CE 0A 0A 57 6F 75	playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
+ 0000009D 0A 0A 57 6F 75	playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
 	   6C 64 20 79 6F
 	   75 20 6C 69 6B
 	   65 20 74 6F 20
@@ -75,14 +65,7 @@ gameLoop.asm						     Page 1 - 1
 	   61 67 61 69 6E
 	   3F 20 5B 79 2F
 	   6E 5D 20 00
- 000000F5 0A 0A 54 68 65	finalTerm            byte  10,10,"The value of term ",0
-	   20 76 61 6C 75
-	   65 20 6F 66 20
-	   74 65 72 6D 20
-	   00
- 0000010A 69 73 20 00		finalDialog          byte  "is ",0
-
- 0000010E 20 5F 5F 5F 5F	gameTop              byte  " _______________________________________", 10,0
+ 000000C4 20 5F 5F 5F 5F	gameTop              byte  " _______________________________________", 10,0
 	   5F 5F 5F 5F 5F
 	   5F 5F 5F 5F 5F
 	   5F 5F 5F 5F 5F
@@ -91,7 +74,7 @@ gameLoop.asm						     Page 1 - 1
 	   5F 5F 5F 5F 5F
 	   5F 5F 5F 5F 5F
 	   0A 00
- 00000138 7C 20 20 20 20	gameRowTop           byte  "|       |       |       |       |       |TOTAL: ",0
+ 000000EE 7C 20 20 20 20	gameRowTop           byte  "|       |       |       |       |       |TOTAL: ",0
 	   20 20 20 7C 20
 	   20 20 20 20 20
 	   20 7C 20 20 20
@@ -101,12 +84,12 @@ gameLoop.asm						     Page 1 - 1
 	   20 20 20 20 20
 	   7C 54 4F 54 41
 	   4C 3A 20 00
- 00000169 0A 7C 00		gameRowTotalAppend   byte 10, "|",0
- 0000016C 20 20 20 00		gameFrontSpacer        byte  "   ",0
- 00000170 20 20 7C 00		gameBackSpacer        byte  "  |",0
- 00000174 42 4F 4D 42 53	gameRowBombs         byte   "BOMBS: 0",0
+ 0000011F 0A 7C 00		gameRowTotalAppend   byte 10, "|",0
+ 00000122 20 20 20 00		gameFrontSpacer        byte  "   ",0
+ 00000126 20 20 7C 00		gameBackSpacer        byte  "  |",0
+ 0000012A 42 4F 4D 42 53	gameRowBombs         byte   "BOMBS: 0",0
 	   3A 20 30 00
- 0000017D 0A 7C 5F 5F 5F	gameRowBottom        byte  10,"|_______|_______|_______|_______|_______|", 10,0
+ 00000133 0A 7C 5F 5F 5F	gameRowBottom        byte  10,"|_______|_______|_______|_______|_______|", 10,0
 	   5F 5F 5F 5F 7C
 	   5F 5F 5F 5F 5F
 	   5F 5F 7C 5F 5F
@@ -115,419 +98,402 @@ gameLoop.asm						     Page 1 - 1
 	   5F 5F 5F 7C 5F
 	   5F 5F 5F 5F 5F
 	   5F 7C 0A 00
- 000001A9 20 54 4F 54 3A	gameColumnTotals    byte    " TOT: ",0
-	   20 00
- 000001B0 20 42 4D 42 3A	gameColumnBombs     byte    " BMB: 0",0
-	   20 30 00
- 000001B8 0A 00			lineEnd             byte    10,0
- 000001BA 30 00			leadingZero         byte    "0",0
-
- 000001BC 0A 0A 56 49 43	victorySpeech              byte 10,10,"VICTORY!!!",10,10,0
+ 0000015F 54 4F 54 3A 20	gameColumnTotals    byte    "TOT: ",0
+	   00
+ 00000165 42 4D 42 3A 20	gameColumnBombs     byte    "BMB: 0",0
+	   30 00
+ 0000016C 0A 00			lineEnd             byte    10,0
+ 0000016E 30 00			leadingZero         byte    "0",0
+ 00000170 20 00			leadingSpace        byte    " ",0
+ 00000172 3F 20 00		faceDown    byte "? ",0
+ 00000175 0A 0A 56 49 43	victorySpeech              byte 10,10,"VICTORY!!!",10,10,0
 	   54 4F 52 59 21
 	   21 21 0A 0A 00
 
- 000001CB  00000019 [		cardArray db 25 dup(?)
+ 00000184  00000019 [		cardArray db 25 dup(?)
 	    00
 	   ]
- 000001E4  00000019 [		facingArray db 25 dup(0)
+ 0000019D  00000019 [		facingArray db 25 dup(?)
 	    00
 	   ]
- 000001FD  00000005 [		rowTotals    db  5 dup(?)
+ 000001B6  00000005 [		rowTotals    db  5 dup(?)
 	    00
 	   ]
- 00000202  00000005 [		rowBombs    db  5 dup(?)
+ 000001BB  00000005 [		rowBombs    db  5 dup(?)
 	    00
 	   ]
- 00000207  00000005 [		columnTotals    db  5 dup(?)
+ 000001C0  00000005 [		columnTotals    db  5 dup(?)
 	    00
 	   ]
- 0000020C  00000005 [		columnBombs    db  5 dup(?)
+ 000001C5  00000005 [		columnBombs    db  5 dup(?)
 	    00
 	   ]
 
- 00000211 3F 20 00		faceDown    byte "? ",0
-
+ 000001CA 00000000		returnAddress dd ?
 
  00000000			.code
 
 				;; Call gameLoop() - No Parameters, no return value
  00000000			gameLoop PROC near
  00000000			_gameLoop:
+ 00000000  5A			pop edx
+ 00000001  89 15 000001CA R	mov [returnAddress], edx
+ 00000007  52			push edx
 
- 00000000			Setup:
+ 00000008			Setup:
 				; populates cardArray w/ [0-3]
- 00000000  BB 00000000		    mov ebx, 0
- 00000005			StaticPopulationLoop:
- 00000005  0F C7 F0		    RDRAND EAX
-
- 00000008  66| 33 D2		    xor  dx, dx
- 0000000B  66| B9 000A		    mov  cx, 10    
- 0000000F  66| F7 F1		    div  cx        ; dx now contains [0-9] remainder of division
-
- 00000012  66| 8B C2		    mov ax, dx
- 00000015  66| 33 D2		    xor dx, dx
- 00000018  66| B9 0002		    mov cx, 2
- 0000001C  66| F7 F1		    div cx        ; ax now contains [0-4]
-
- 0000001F  66| 83 F8 04		    cmp ax, 4
- 00000023  74 E0		    je StaticPopulationLoop    ; don't want 4s
-				    
- 00000025  66| 8B D0		    mov dx, ax
- 00000028  B8 00000000		    mov eax, 0
- 0000002D  66| 03 C2		    add ax, dx  ;random [0-3] is in eax
-
- 00000030  88 83 000001CB R	    mov [cardArray+ebx], al
- 00000036  83 C3 01		    add ebx, 1
- 00000039  83 FB 19		    cmp ebx, 25
- 0000003C  7C C7		    jl StaticPopulationLoop
-
- 0000003E  BB 00000000		    mov ebx, 0
- 00000043  B9 00000000		    mov ecx, 0
- 00000048			rowInfoLoop:
- 00000048  B8 00000000		    mov eax, 0
- 0000004D  C6 81 00000202 R	    mov [rowBombs+ecx], 0
+ 00000008  BB 00000000		    mov ebx, 0
+ 0000000D			StaticPopulationLoop:
+ 0000000D  E8 00000000 E	    call random
+ 00000012  88 83 00000184 R	    mov [cardArray+ebx], al
+ 00000018  C6 83 0000019D R	    mov [facingArray+ebx], 0
 	   00
- 00000054  C6 81 000001FD R	    mov [rowTotals+ecx], 0
+ 0000001F  83 C3 01		    add ebx, 1
+ 00000022  83 FB 19		    cmp ebx, 25
+ 00000025  7C E6		    jl StaticPopulationLoop
+				;end static population loop
+
+ 00000027  BB 00000000		    mov ebx, 0
+ 0000002C  B9 00000000		    mov ecx, 0
+ 00000031			rowInfoLoop:
+ 00000031  B8 00000000		    mov eax, 0
+ 00000036  C6 81 000001BB R	    mov [rowBombs+ecx], 0
 	   00
- 0000005B  C6 81 0000020C R	    mov [columnBombs+ecx], 0
+ 0000003D  C6 81 000001B6 R	    mov [rowTotals+ecx], 0
 	   00
- 00000062  C6 81 00000207 R	    mov [columnTotals+ecx], 0
+ 00000044  C6 81 000001C5 R	    mov [columnBombs+ecx], 0
 	   00
- 00000069			    rowInfoInnerLoop:
- 00000069  50			        push eax
- 0000006A  0F B6 83		        movzx eax, [cardArray+ebx]
-	   000001CB R
- 00000071  83 F8 00		        cmp eax, 0
- 00000074  7F 09		        jg rowTotalAdd
- 00000076  80 81 00000202 R	            add [rowBombs+ecx], 1
+ 0000004B  C6 81 000001C0 R	    mov [columnTotals+ecx], 0
+	   00
+ 00000052			    rowInfoInnerLoop:
+ 00000052  50			        push eax
+ 00000053  0F B6 83		        movzx eax, [cardArray+ebx]
+	   00000184 R
+ 0000005A  83 F8 00		        cmp eax, 0
+ 0000005D  7F 09		        jg rowTotalAdd
+ 0000005F  80 81 000001BB R	            add [rowBombs+ecx], 1
 	   01
- 0000007D  EB 06		            jmp rowIncrement
- 0000007F			        rowTotalAdd:
- 0000007F  00 81 000001FD R	            add [rowTotals+ecx], al
- 00000085			        rowIncrement:
- 00000085  83 C3 01		            add ebx, 1
- 00000088  58			            pop eax
- 00000089  83 C0 01		            add eax, 1
- 0000008C  83 F8 05		            cmp eax, 5
- 0000008F  7C D8		            jl rowInfoInnerLoop
+ 00000066  EB 06		            jmp rowIncrement
+ 00000068			        rowTotalAdd:
+ 00000068  00 81 000001B6 R	            add [rowTotals+ecx], al
+ 0000006E			        rowIncrement:
+ 0000006E  83 C3 01		            add ebx, 1
+ 00000071  58			            pop eax
+ 00000072  83 C0 01		            add eax, 1
+ 00000075  83 F8 05		            cmp eax, 5
+ 00000078  7C D8		            jl rowInfoInnerLoop
 				    ;end inner loop
- 00000091  83 C1 01		    add ecx, 1
- 00000094  83 F9 05		    cmp ecx, 5
- 00000097  7C AF		    jl rowInfoLoop
+ 0000007A  83 C1 01		    add ecx, 1
+ 0000007D  83 F9 05		    cmp ecx, 5
+ 00000080  7C AF		    jl rowInfoLoop
 				;end rowInfoLoop
 
- 00000099  BB 00000000		    mov ebx, 0
- 0000009E  B9 00000000		    mov ecx, 0
- 000000A3			columnInfoLoop:
- 000000A3  51			    push ecx
- 000000A4  B9 00000000		    mov ecx, 0
- 000000A9			    columnInfoInnerLoop:
- 000000A9  0F B6 83		    movzx eax, [cardArray+ebx]
-	   000001CB R
- 000000B0  83 F8 00		    cmp eax, 0
- 000000B3  7F 09		    jg columnTotalAdd
- 000000B5  80 81 0000020C R	        add [columnBombs+ecx], 1
+ 00000082  BB 00000000		    mov ebx, 0
+ 00000087  B9 00000000		    mov ecx, 0
+ 0000008C			columnInfoLoop:
+ 0000008C  51			    push ecx
+ 0000008D  B9 00000000		    mov ecx, 0
+ 00000092			    columnInfoInnerLoop:
+ 00000092  0F B6 83		    movzx eax, [cardArray+ebx]
+	   00000184 R
+ 00000099  83 F8 00		    cmp eax, 0
+ 0000009C  7F 09		    jg columnTotalAdd
+ 0000009E  80 81 000001C5 R	        add [columnBombs+ecx], 1
 	   01
- 000000BC  EB 06		        jmp columnIncrement
- 000000BE			    columnTotalAdd:
- 000000BE  00 81 00000207 R	        add [columnTotals+ecx], al
- 000000C4			    columnIncrement:
- 000000C4  83 C3 01		        add ebx, 1
- 000000C7  83 C1 01		        add ecx, 1
- 000000CA  83 F9 05		        cmp ecx, 5
- 000000CD  7C DA		        jl columnInfoInnerLoop
- 000000CF  59			    pop ecx
- 000000D0  83 C1 01		    add ecx, 1
- 000000D3  83 F9 05		    cmp ecx, 5
- 000000D6  7C CB		    jl columnInfoLoop
+ 000000A5  EB 06		        jmp columnIncrement
+ 000000A7			    columnTotalAdd:
+ 000000A7  00 81 000001C0 R	        add [columnTotals+ecx], al
+ 000000AD			    columnIncrement:
+ 000000AD  83 C3 01		        add ebx, 1
+ 000000B0  83 C1 01		        add ecx, 1
+ 000000B3  83 F9 05		        cmp ecx, 5
+ 000000B6  7C DA		        jl columnInfoInnerLoop
+ 000000B8  59			    pop ecx
+ 000000B9  83 C1 01		    add ecx, 1
+ 000000BC  83 F9 05		    cmp ecx, 5
+ 000000BF  7C CB		    jl columnInfoLoop
 				;end columnInfoLoop
 
- 000000D8			gameLoopStart:
+ 000000C1			gameLoopStart:
 				    ; DISPLAY GAME STATE
- 000000D8  68 0000010E R	    push offset gameTop
- 000000DD  E8 00000000 E	    call printString
- 000000E2  B9 00000000		    mov ecx, 0
- 000000E7			    printLoop:
- 000000E7  51			        push ecx
- 000000E8  68 00000138 R	        push offset gameRowTop
- 000000ED  E8 00000000 E	        call printString
- 000000F2  58			        pop eax
- 000000F3  50			        push eax
- 000000F4  51			        push ecx
- 000000F5  52			        push edx
- 000000F6  BA 00000000		        mov edx, 0
- 000000FB  B9 00000005		        mov ecx, 5
- 00000100  F7 F1		        div ecx
- 00000102  5A			        pop edx
- 00000103  59			        pop ecx
- 00000104  0F B6 80		        movzx eax, [rowTotals+eax]
-	   000001FD R
- 0000010B  83 F8 0A		        cmp eax, 10
- 0000010E  7D 1D		        jge printRowTot
- 00000110  50			        push eax
- 00000111  68 000001BA R	        push offset leadingZero
- 00000116  E8 00000000 E	        call printString
- 0000011B  58			        pop  eax
- 0000011C  83 F8 00		        cmp eax, 0
- 0000011F  7F 0C		        jg  printRowTot
- 00000121  50			        push eax
- 00000122  68 000001BA R	        push offset leadingZero
- 00000127  E8 00000000 E	        call printString
- 0000012C  58			        pop  eax
- 0000012D			        printRowTot:
- 0000012D  50			        push eax
- 0000012E  E8 00000000 E	        call writeNumber
- 00000133  68 00000169 R	        push offset gameRowTotalAppend
- 00000138  E8 00000000 E	        call printString
- 0000013D  59			        pop ecx
- 0000013E  8B D1		        mov edx, ecx
- 00000140  83 C2 05		        add edx, 5
- 00000143  52			        push edx
- 00000144			        printSubLoop:
- 00000144  52			             push edx
- 00000145  51			             push ecx
- 00000146  68 0000016C R	             push offset gameFrontSpacer
- 0000014B  E8 00000000 E	             call printString
- 00000150  59			             pop ecx
- 00000151  51			             push ecx
- 00000152  BB 00000000		             mov ebx, 0
- 00000157  8A 99 000001E4 R	             mov bl, [facingArray+ecx]
- 0000015D  83 FB 00		             cmp ebx, 0
- 00000160  7F 0C		             jg faceup
+ 000000C1  E8 00000000 E	    call clearConsole@0 
+ 000000C6  68 000000C4 R	    push offset gameTop
+ 000000CB  E8 00000000 E	    call printString
+ 000000D0  B9 00000000		    mov ecx, 0
+ 000000D5			    printLoop:
+ 000000D5  51			        push ecx
+ 000000D6  68 000000EE R	        push offset gameRowTop
+ 000000DB  E8 00000000 E	        call printString
+ 000000E0  58			        pop eax
+ 000000E1  50			        push eax
+ 000000E2  51			        push ecx
+ 000000E3  52			        push edx
+ 000000E4  BA 00000000		        mov edx, 0
+ 000000E9  B9 00000005		        mov ecx, 5
+ 000000EE  F7 F1		        div ecx
+ 000000F0  5A			        pop edx
+ 000000F1  59			        pop ecx
+ 000000F2  0F B6 80		        movzx eax, [rowTotals+eax]
+	   000001B6 R
+ 000000F9  83 F8 0A		        cmp eax, 10
+ 000000FC  7D 1D		        jge printRowTot
+ 000000FE  50			        push eax
+ 000000FF  68 0000016E R	        push offset leadingZero
+ 00000104  E8 00000000 E	        call printString
+ 00000109  58			        pop  eax
+ 0000010A  83 F8 00		        cmp eax, 0
+ 0000010D  7F 0C		        jg  printRowTot
+ 0000010F  50			        push eax
+ 00000110  68 0000016E R	        push offset leadingZero
+ 00000115  E8 00000000 E	        call printString
+ 0000011A  58			        pop  eax
+ 0000011B			        printRowTot:
+ 0000011B  50			        push eax
+ 0000011C  E8 00000000 E	        call writeNumber
+ 00000121  68 0000011F R	        push offset gameRowTotalAppend
+ 00000126  E8 00000000 E	        call printString
+ 0000012B  59			        pop ecx
+ 0000012C  8B D1		        mov edx, ecx
+ 0000012E  83 C2 05		        add edx, 5
+ 00000131  52			        push edx
+ 00000132			        printSubLoop:
+ 00000132  52			             push edx
+ 00000133  51			             push ecx
+ 00000134  68 00000122 R	             push offset gameFrontSpacer
+ 00000139  E8 00000000 E	             call printString
+ 0000013E  59			             pop ecx
+ 0000013F  51			             push ecx
+ 00000140  BB 00000000		             mov ebx, 0
+ 00000145  8A 99 0000019D R	             mov bl, [facingArray+ecx]
+ 0000014B  83 FB 00		             cmp ebx, 0
+ 0000014E  7F 0C		             jg faceup
 
- 00000162  68 00000211 R	             push offset faceDown
- 00000167  E8 00000000 E	             call printString
- 0000016C  EB 0C		             jmp facingDone
+ 00000150  68 00000172 R	             push offset faceDown
+ 00000155  E8 00000000 E	             call printString
+ 0000015A  EB 0C		             jmp facingDone
 
- 0000016E			             faceup:
- 0000016E  8A 99 000001CB R	             mov bl, [cardArray+ecx]
- 00000174  53			             push ebx
- 00000175  E8 00000000 E	             call writeNumber
+ 0000015C			             faceup:
+ 0000015C  8A 99 00000184 R	             mov bl, [cardArray+ecx]
+ 00000162  53			             push ebx
+ 00000163  E8 00000000 E	             call writeNumber
 
- 0000017A			             facingDone:
- 0000017A  68 00000170 R	             push offset gameBackSpacer
- 0000017F  E8 00000000 E	             call printString
- 00000184  59			             pop ecx
- 00000185  83 C1 01		             add ecx, 1
- 00000188  5A			             pop edx
- 00000189  3B CA		             cmp ecx, edx
- 0000018B  7D 02		             jge endPrintSubLoop
- 0000018D  EB B5		             jmp printSubLoop
- 0000018F			        endPrintSubLoop:
- 0000018F  5A			        pop edx
- 00000190  51			        push ecx
- 00000191  68 00000174 R	        push offset gameRowBombs
- 00000196  E8 00000000 E	        call printString
- 0000019B  58			        pop eax
- 0000019C  50			        push eax
- 0000019D  51			        push ecx
- 0000019E  52			        push edx
- 0000019F  BA 00000000		        mov edx, 0
- 000001A4  B9 00000005		        mov ecx, 5
- 000001A9  F7 F1		        div ecx
- 000001AB  5A			        pop edx
- 000001AC  59			        pop ecx
- 000001AD  83 E8 01		        sub eax, 1
- 000001B0  0F B6 80		        movzx eax, [rowBombs+eax]
-	   00000202 R
- 000001B7  50			        push eax
- 000001B8  83 F8 00		        cmp eax, 0
- 000001BB  7F 0A		        jg printRowBmb
- 000001BD  68 000001BA R	        push offset leadingZero
- 000001C2  E8 00000000 E	        call printString
- 000001C7			        printRowBmb:
- 000001C7  E8 00000000 E	        call writeNumber
- 000001CC  68 0000017D R	        push offset gameRowBottom
- 000001D1  E8 00000000 E	        call printString
- 000001D6  59			        pop ecx
- 000001D7  83 F9 19		        cmp ecx, 25
- 000001DA  0F 8C FFFFFF07	        jl printLoop
+ 00000168			             facingDone:
+ 00000168  68 00000126 R	             push offset gameBackSpacer
+ 0000016D  E8 00000000 E	             call printString
+ 00000172  59			             pop ecx
+ 00000173  83 C1 01		             add ecx, 1
+ 00000176  5A			             pop edx
+ 00000177  3B CA		             cmp ecx, edx
+ 00000179  7D 02		             jge endPrintSubLoop
+ 0000017B  EB B5		             jmp printSubLoop
+ 0000017D			        endPrintSubLoop:
+ 0000017D  5A			        pop edx
+ 0000017E  51			        push ecx
+ 0000017F  68 0000012A R	        push offset gameRowBombs
+ 00000184  E8 00000000 E	        call printString
+ 00000189  58			        pop eax
+ 0000018A  50			        push eax
+ 0000018B  51			        push ecx
+ 0000018C  52			        push edx
+ 0000018D  BA 00000000		        mov edx, 0
+ 00000192  B9 00000005		        mov ecx, 5
+ 00000197  F7 F1		        div ecx
+ 00000199  5A			        pop edx
+ 0000019A  59			        pop ecx
+ 0000019B  83 E8 01		        sub eax, 1
+ 0000019E  0F B6 80		        movzx eax, [rowBombs+eax]
+	   000001BB R
+ 000001A5  50			        push eax
+ 000001A6  83 F8 00		        cmp eax, 0
+ 000001A9  7F 0A		        jg printRowBmb
+ 000001AB  68 0000016E R	        push offset leadingZero
+ 000001B0  E8 00000000 E	        call printString
+ 000001B5			        printRowBmb:
+ 000001B5  E8 00000000 E	        call writeNumber
+ 000001BA  68 00000133 R	        push offset gameRowBottom
+ 000001BF  E8 00000000 E	        call printString
+ 000001C4  59			        pop ecx
+ 000001C5  83 F9 19		        cmp ecx, 25
+ 000001C8  0F 8C FFFFFF07	        jl printLoop
 				    ;end printLoop
 				    
- 000001E0  BB 00000000		    mov ebx, 0
- 000001E5  B9 00000000		    mov ecx, 0
- 000001EA			    columnTotalsPrint:
- 000001EA  51			        push ecx
- 000001EB  68 000001A9 R	        push offset gameColumnTotals
- 000001F0  E8 00000000 E	        call printString
- 000001F5  59			        pop ecx
- 000001F6  51			        push ecx
- 000001F7  0F B6 81		        movzx eax, [columnTotals+ecx]
-	   00000207 R
- 000001FE  83 F8 0A		        cmp eax, 10
- 00000201  7D 1D		        jge printColTot
- 00000203  50			        push eax
- 00000204  68 000001BA R	        push offset leadingZero
- 00000209  E8 00000000 E	        call printString
- 0000020E  58			        pop  eax
- 0000020F  83 F8 00		        cmp eax, 0
- 00000212  7F 0C		        jg  printColTot
- 00000214  50			        push eax
- 00000215  68 000001BA R	        push offset leadingZero
- 0000021A  E8 00000000 E	        call printString
- 0000021F  58			        pop  eax
- 00000220			        printColTot:
- 00000220  50			        push eax
- 00000221  E8 00000000 E	        call writeNumber
- 00000226  59			        pop ecx
- 00000227  83 C1 01		        add ecx, 1
- 0000022A  83 F9 05		        cmp ecx, 5
- 0000022D  7D 02		        jge columnBombsPrintSetup
- 0000022F  EB B9		        jmp columnTotalsPrint
+ 000001CE  68 00000170 R	    push offset leadingSpace
+ 000001D3  E8 00000000 E	    call printString
+ 000001D8  BB 00000000		    mov ebx, 0
+ 000001DD  B9 00000000		    mov ecx, 0
+ 000001E2			    columnTotalsPrint:
+ 000001E2  51			        push ecx
+ 000001E3  68 0000015F R	        push offset gameColumnTotals
+ 000001E8  E8 00000000 E	        call printString
+ 000001ED  59			        pop ecx
+ 000001EE  51			        push ecx
+ 000001EF  0F B6 81		        movzx eax, [columnTotals+ecx]
+	   000001C0 R
+ 000001F6  83 F8 0A		        cmp eax, 10
+ 000001F9  7D 1D		        jge printColTot
+ 000001FB  50			        push eax
+ 000001FC  68 0000016E R	        push offset leadingZero
+ 00000201  E8 00000000 E	        call printString
+ 00000206  58			        pop  eax
+ 00000207  83 F8 00		        cmp eax, 0
+ 0000020A  7F 0C		        jg  printColTot
+ 0000020C  50			        push eax
+ 0000020D  68 0000016E R	        push offset leadingZero
+ 00000212  E8 00000000 E	        call printString
+ 00000217  58			        pop  eax
+ 00000218			        printColTot:
+ 00000218  50			        push eax
+ 00000219  E8 00000000 E	        call writeNumber
+ 0000021E  59			        pop ecx
+ 0000021F  83 C1 01		        add ecx, 1
+ 00000222  83 F9 05		        cmp ecx, 5
+ 00000225  7D 02		        jge columnBombsPrintSetup
+ 00000227  EB B9		        jmp columnTotalsPrint
 
- 00000231			    columnBombsPrintSetup:
- 00000231  68 000001B8 R	        push offset lineEnd
- 00000236  E8 00000000 E	        call printString
- 0000023B  BB 00000000		        mov ebx, 0
- 00000240  B9 00000000		        mov ecx, 0
- 00000245			    columnBombsPrint:
- 00000245  51			        push ecx
- 00000246  68 000001B0 R	        push offset gameColumnBombs
- 0000024B  E8 00000000 E	        call printString
- 00000250  59			        pop ecx
- 00000251  51			        push ecx
- 00000252  0F B6 81		        movzx eax, [columnBombs+ecx]
-	   0000020C R
- 00000259  50			        push eax
- 0000025A  83 F8 00		        cmp eax, 0
- 0000025D  7F 0A		        jg printColBmb
- 0000025F  68 000001BA R	        push offset leadingZero
- 00000264  E8 00000000 E	        call printString
- 00000269			        printColBmb:
- 00000269  E8 00000000 E	        call writeNumber
- 0000026E  59			        pop ecx
- 0000026F  83 C1 01		        add ecx, 1
- 00000272  83 F9 05		        cmp ecx, 5
- 00000275  7D 02		        jge gamePrintEnd
- 00000277  EB CC		        jmp columnBombsPrint
+ 00000229			    columnBombsPrintSetup:
+ 00000229  68 0000016C R	        push offset lineEnd
+ 0000022E  E8 00000000 E	        call printString
+ 00000233  68 00000170 R	        push offset leadingSpace
+ 00000238  E8 00000000 E	        call printString
+ 0000023D  BB 00000000		        mov ebx, 0
+ 00000242  B9 00000000		        mov ecx, 0
+ 00000247			    columnBombsPrint:
+ 00000247  51			        push ecx
+ 00000248  68 00000165 R	        push offset gameColumnBombs
+ 0000024D  E8 00000000 E	        call printString
+ 00000252  59			        pop ecx
+ 00000253  51			        push ecx
+ 00000254  0F B6 81		        movzx eax, [columnBombs+ecx]
+	   000001C5 R
+ 0000025B  50			        push eax
+ 0000025C  83 F8 00		        cmp eax, 0
+ 0000025F  7F 0A		        jg printColBmb
+ 00000261  68 0000016E R	        push offset leadingZero
+ 00000266  E8 00000000 E	        call printString
+ 0000026B			        printColBmb:
+ 0000026B  E8 00000000 E	        call writeNumber
+ 00000270  59			        pop ecx
+ 00000271  83 C1 01		        add ecx, 1
+ 00000274  83 F9 05		        cmp ecx, 5
+ 00000277  7D 02		        jge gamePrintEnd
+ 00000279  EB CC		        jmp columnBombsPrint
 
- 00000279			gamePrintEnd:
- 00000279  68 000001B8 R	    push offset lineEnd
- 0000027E  E8 00000000 E	    call printString
+ 0000027B			gamePrintEnd:
+ 0000027B  68 0000016C R	    push offset lineEnd
+ 00000280  E8 00000000 E	    call printString
 
- 00000283			guessInput:
+ 00000285			guessInput:
 				    ;Guess Input:Row
- 00000283  68 00000000 R	    push  offset rowPrompt
- 00000288  E8 00000000 E	    call  printString
- 0000028D  E8 00000000 E	    call  readline
+ 00000285  68 00000000 R	    push  offset rowPrompt
+ 0000028A  E8 00000000 E	    call  printString
+ 0000028F  E8 00000000 E	    call  readline
 				    
 				    ;convert user input from ASCII to integer
- 00000292  B9 00000000		    mov    ecx,0
- 00000297  BB 00000000		    mov    ebx,0
+ 00000294  B9 00000000		    mov    ecx,0
+ 00000299  BB 00000000		    mov    ebx,0
 
- 0000029C  8A 08		    mov  cl,[eax]                    ; Look at the character in the string
- 0000029E  80 E9 30		    sub  cl,'0'
- 000002A1  03 D9		    add  ebx,ecx
+ 0000029E  8A 08		    mov  cl,[eax]                    ; Look at the character in the string
+ 000002A0  80 E9 30		    sub  cl,'0'
+ 000002A3  03 D9		    add  ebx,ecx
 
- 000002A3  83 FB 05		    cmp ebx,5
- 000002A6  0F 8F 000000F5	    jg invalidInputError
- 000002AC  83 FB 01		    cmp ebx,1
- 000002AF  0F 8C 000000EC	    jl invalidInputError
- 000002B5  53			    push ebx
+ 000002A5  83 FB 05		    cmp ebx,5
+ 000002A8  0F 8F 000000D5	    jg invalidInputError
+ 000002AE  83 FB 01		    cmp ebx,1
+ 000002B1  0F 8C 000000CC	    jl invalidInputError
+ 000002B7  53			    push ebx
 
 				    ;Guess Input: Column
- 000002B6  68 00000034 R	    push  offset columnPrompt
- 000002BB  E8 00000000 E	    call  printString
- 000002C0  E8 00000000 E	    call  readline
+ 000002B8  68 00000034 R	    push  offset columnPrompt
+ 000002BD  E8 00000000 E	    call  printString
+ 000002C2  E8 00000000 E	    call  readline
 				    
 				    ;convert user input from ASCII to integer
- 000002C5  B9 00000000		    mov    ecx,0
- 000002CA  5B			    pop    ebx
- 000002CB  83 EB 01		    sub  ebx, 1
- 000002CE  6B DB 05		    imul ebx, 5
+ 000002C7  B9 00000000		    mov    ecx,0
+ 000002CC  5B			    pop    ebx
+ 000002CD  83 EB 01		    sub  ebx, 1
+ 000002D0  6B DB 05		    imul ebx, 5
 
- 000002D1  8A 08		    mov  cl,[eax]                    ; Look at the character in the string
- 000002D3  80 E9 30		    sub  cl,'0'
+ 000002D3  8A 08		    mov  cl,[eax]                    ; Look at the character in the string
+ 000002D5  80 E9 30		    sub  cl,'0'
 
- 000002D6  83 F9 05		    cmp ecx,5
- 000002D9  0F 8F 000000C2	    jg invalidInputError
- 000002DF  83 F9 01		    cmp ecx,1
- 000002E2  0F 8C 000000B9	    jl invalidInputError
- 000002E8  03 D9		    add  ebx,ecx
+ 000002D8  83 F9 05		    cmp ecx,5
+ 000002DB  0F 8F 000000A2	    jg invalidInputError
+ 000002E1  83 F9 01		    cmp ecx,1
+ 000002E4  0F 8C 00000099	    jl invalidInputError
+ 000002EA  03 D9		    add  ebx,ecx
 
 				;gameover check
- 000002EA  B8 00000000		    mov  eax, 0
- 000002EF  83 EB 01		    sub  ebx, 1
- 000002F2  8A 83 000001CB R	    mov  al, [cardArray+ebx]
- 000002F8  C6 83 000001E4 R	    mov  [facingArray+ebx], 1
+ 000002EC  B8 00000000		    mov  eax, 0
+ 000002F1  83 EB 01		    sub  ebx, 1
+ 000002F4  8A 83 00000184 R	    mov  al, [cardArray+ebx]
+ 000002FA  C6 83 0000019D R	    mov  [facingArray+ebx], 1
 	   01
- 000002FF  83 F8 00		    cmp  eax,0
- 00000302  0F 84 0000008D	    je    gameOver
+ 00000301  83 F8 00		    cmp  eax,0
+ 00000304  74 71		    je    gameOver
 
- 00000308  B9 00000000		    mov ecx, 0
- 0000030D			victoryCheck:
- 0000030D  0F B6 81		    movzx eax, byte ptr [facingArray+ecx]
-	   000001E4 R
- 00000314  83 F8 01		    cmp eax, 1
- 00000317  74 10		    je victoryCheckContinue
- 00000319  0F B6 81		    movzx eax, byte ptr [cardArray+ecx]
-	   000001CB R
- 00000320  83 F8 02		    cmp eax, 2
- 00000323  0F 8D FFFFFDAF	    jge gameLoopStart
- 00000329			victoryCheckContinue:
- 00000329  83 C1 01		    add ecx, 1
- 0000032C  83 F9 19		    cmp ecx, 25
- 0000032F  7D 02		    jge victory
- 00000331  EB DA		    jmp victoryCheck
+ 00000306  B9 00000000		    mov ecx, 0
+ 0000030B			victoryCheck:
+ 0000030B  0F B6 81		    movzx eax, byte ptr [facingArray+ecx]
+	   0000019D R
+ 00000312  83 F8 01		    cmp eax, 1
+ 00000315  74 10		    je victoryCheckContinue
+ 00000317  0F B6 81		    movzx eax, byte ptr [cardArray+ecx]
+	   00000184 R
+ 0000031E  83 F8 02		    cmp eax, 2
+ 00000321  0F 8D FFFFFD9A	    jge gameLoopStart
+ 00000327			victoryCheckContinue:
+ 00000327  83 C1 01		    add ecx, 1
+ 0000032A  83 F9 19		    cmp ecx, 25
+ 0000032D  7D 02		    jge victory
+ 0000032F  EB DA		    jmp victoryCheck
 
- 00000333			victory:
- 00000333  50			    push eax    ;2nd writeNumber parameter
- 00000334  83 C3 01		    add  ebx, 1
- 00000337  53			    push ebx    ;1st writeNumber parameter
- 00000338  68 000000F5 R	    push  offset finalTerm
- 0000033D  E8 00000000 E	    call  printString
-
- 00000342  E8 00000000 E	    call  writeNumber
-
- 00000347  68 0000010A R	    push  offset finalDialog
- 0000034C  E8 00000000 E	    call  printString
-
- 00000351  E8 00000000 E	    call  writeNumber
-
- 00000356  68 000001BC R	    push offset victorySpeech
- 0000035B  E8 00000000 E	    call printString
+ 00000331			victory:
+ 00000331  68 00000175 R	    push offset victorySpeech
+ 00000336  E8 00000000 E	    call printString
 
 
- 00000360			playAgain:
- 00000360  68 000000CE R	    push  offset playAgainDialog
- 00000365  E8 00000000 E	    call  printString
+ 0000033B			playAgain:
+ 0000033B  68 0000009D R	    push  offset playAgainDialog
+ 00000340  E8 00000000 E	    call  printString
 
- 0000036A  E8 00000000 E	    call  readline
+ 00000345  E8 00000000 E	    call  readline
 				    
 				    ; Look at the character in the string
- 0000036F  B9 00000000		    mov    ecx,0
- 00000374  8A 08		    mov  cl,[eax]
+ 0000034A  B9 00000000		    mov    ecx,0
+ 0000034F  8A 08		    mov  cl,[eax]
 
- 00000376  83 F9 6E		    cmp ecx, 110
- 00000379  74 19		    je exit
- 0000037B  83 F9 4E		    cmp ecx, 78
- 0000037E  74 14		    je exit
- 00000380  83 F9 79		    cmp ecx, 121
- 00000383  0F 84 FFFFFC77	    je setup
- 00000389  83 F9 59		    cmp ecx, 89
- 0000038C  0F 84 FFFFFC6E	    je setup
- 00000392  EB CC		    jmp playAgain
+ 00000351  83 F9 6E		    cmp ecx, 110
+ 00000354  74 19		    je exit
+ 00000356  83 F9 4E		    cmp ecx, 78
+ 00000359  74 14		    je exit
+ 0000035B  83 F9 79		    cmp ecx, 121
+ 0000035E  0F 84 FFFFFCA4	    je setup
+ 00000364  83 F9 59		    cmp ecx, 89
+ 00000367  0F 84 FFFFFC9B	    je setup
+ 0000036D  EB CC		    jmp playAgain
 				     
- 00000394			exit:
- 00000394  C3			    ret     ; Return to the main program.
+ 0000036F			exit:
+ 0000036F  8B 15 000001CA R	    mov edx, [returnAddress]
+ 00000375  52			    push edx
+ 00000376  C3			    ret     ; Return to the main program.
 
- 00000395			gameOver:
+ 00000377			gameOver:
 				    ; Print gameOverDialog
- 00000395  68 000000C0 R	    push  offset gameOverDialog
- 0000039A  E8 00000000 E	    call  printString
- 0000039F  EB BF		    jmp playAgain
+ 00000377  68 0000008F R	    push  offset gameOverDialog
+ 0000037C  E8 00000000 E	    call  printString
+ 00000381  EB B8		    jmp playAgain
 				; End gameOver
 
- 000003A1			invalidInputError:
+ 00000383			invalidInputError:
 				    ; Print invalidInputDialog
- 000003A1  68 0000009C R	    push  offset invalidInputDialog
- 000003A6  E8 00000000 E	    call  printString
- 000003AB  E9 FFFFFD28		    jmp gameLoopStart
+ 00000383  68 0000006B R	    push  offset invalidInputDialog
+ 00000388  E8 00000000 E	    call  printString
+ 0000038D  E9 FFFFFEF3		    jmp guessInput
 				; End invalidInputError
 				    
- 000003B0			gameLoop ENDP
+ 00000392			gameLoop ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/25/24 10:41:02
+Microsoft (R) Macro Assembler Version 14.41.34120.0	    11/26/24 11:01:17
 gameLoop.asm						     Symbols 2 - 1
 
 
@@ -538,48 +504,48 @@ Segments and Groups:
                 N a m e                 Size     Length   Align   Combine Class
 
 FLAT . . . . . . . . . . . . . .	GROUP
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000214 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000003B0 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000001CE Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000392 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-gameLoop . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000003B0 Public
+gameLoop . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000392 Public
   _gameLoop  . . . . . . . . . .	L Near	 00000000 _TEXT	
-  Setup  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
-  StaticPopulationLoop . . . . .	L Near	 00000005 _TEXT	
-  rowInfoLoop  . . . . . . . . .	L Near	 00000048 _TEXT	
-  rowInfoInnerLoop . . . . . . .	L Near	 00000069 _TEXT	
-  rowTotalAdd  . . . . . . . . .	L Near	 0000007F _TEXT	
-  rowIncrement . . . . . . . . .	L Near	 00000085 _TEXT	
-  columnInfoLoop . . . . . . . .	L Near	 000000A3 _TEXT	
-  columnInfoInnerLoop  . . . . .	L Near	 000000A9 _TEXT	
-  columnTotalAdd . . . . . . . .	L Near	 000000BE _TEXT	
-  columnIncrement  . . . . . . .	L Near	 000000C4 _TEXT	
-  gameLoopStart  . . . . . . . .	L Near	 000000D8 _TEXT	
-  printLoop  . . . . . . . . . .	L Near	 000000E7 _TEXT	
-  printRowTot  . . . . . . . . .	L Near	 0000012D _TEXT	
-  printSubLoop . . . . . . . . .	L Near	 00000144 _TEXT	
-  faceup . . . . . . . . . . . .	L Near	 0000016E _TEXT	
-  facingDone . . . . . . . . . .	L Near	 0000017A _TEXT	
-  endPrintSubLoop  . . . . . . .	L Near	 0000018F _TEXT	
-  printRowBmb  . . . . . . . . .	L Near	 000001C7 _TEXT	
-  columnTotalsPrint  . . . . . .	L Near	 000001EA _TEXT	
-  printColTot  . . . . . . . . .	L Near	 00000220 _TEXT	
-  columnBombsPrintSetup  . . . .	L Near	 00000231 _TEXT	
-  columnBombsPrint . . . . . . .	L Near	 00000245 _TEXT	
-  printColBmb  . . . . . . . . .	L Near	 00000269 _TEXT	
-  gamePrintEnd . . . . . . . . .	L Near	 00000279 _TEXT	
-  guessInput . . . . . . . . . .	L Near	 00000283 _TEXT	
-  victoryCheck . . . . . . . . .	L Near	 0000030D _TEXT	
-  victoryCheckContinue . . . . .	L Near	 00000329 _TEXT	
-  victory  . . . . . . . . . . .	L Near	 00000333 _TEXT	
-  playAgain  . . . . . . . . . .	L Near	 00000360 _TEXT	
-  exit . . . . . . . . . . . . .	L Near	 00000394 _TEXT	
-  gameOver . . . . . . . . . . .	L Near	 00000395 _TEXT	
-  invalidInputError  . . . . . .	L Near	 000003A1 _TEXT	
+  Setup  . . . . . . . . . . . .	L Near	 00000008 _TEXT	
+  StaticPopulationLoop . . . . .	L Near	 0000000D _TEXT	
+  rowInfoLoop  . . . . . . . . .	L Near	 00000031 _TEXT	
+  rowInfoInnerLoop . . . . . . .	L Near	 00000052 _TEXT	
+  rowTotalAdd  . . . . . . . . .	L Near	 00000068 _TEXT	
+  rowIncrement . . . . . . . . .	L Near	 0000006E _TEXT	
+  columnInfoLoop . . . . . . . .	L Near	 0000008C _TEXT	
+  columnInfoInnerLoop  . . . . .	L Near	 00000092 _TEXT	
+  columnTotalAdd . . . . . . . .	L Near	 000000A7 _TEXT	
+  columnIncrement  . . . . . . .	L Near	 000000AD _TEXT	
+  gameLoopStart  . . . . . . . .	L Near	 000000C1 _TEXT	
+  printLoop  . . . . . . . . . .	L Near	 000000D5 _TEXT	
+  printRowTot  . . . . . . . . .	L Near	 0000011B _TEXT	
+  printSubLoop . . . . . . . . .	L Near	 00000132 _TEXT	
+  faceup . . . . . . . . . . . .	L Near	 0000015C _TEXT	
+  facingDone . . . . . . . . . .	L Near	 00000168 _TEXT	
+  endPrintSubLoop  . . . . . . .	L Near	 0000017D _TEXT	
+  printRowBmb  . . . . . . . . .	L Near	 000001B5 _TEXT	
+  columnTotalsPrint  . . . . . .	L Near	 000001E2 _TEXT	
+  printColTot  . . . . . . . . .	L Near	 00000218 _TEXT	
+  columnBombsPrintSetup  . . . .	L Near	 00000229 _TEXT	
+  columnBombsPrint . . . . . . .	L Near	 00000247 _TEXT	
+  printColBmb  . . . . . . . . .	L Near	 0000026B _TEXT	
+  gamePrintEnd . . . . . . . . .	L Near	 0000027B _TEXT	
+  guessInput . . . . . . . . . .	L Near	 00000285 _TEXT	
+  victoryCheck . . . . . . . . .	L Near	 0000030B _TEXT	
+  victoryCheckContinue . . . . .	L Near	 00000327 _TEXT	
+  victory  . . . . . . . . . . .	L Near	 00000331 _TEXT	
+  playAgain  . . . . . . . . . .	L Near	 0000033B _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 0000036F _TEXT	
+  gameOver . . . . . . . . . . .	L Near	 00000377 _TEXT	
+  invalidInputError  . . . . . .	L Near	 00000383 _TEXT	
 
 
 Symbols:
@@ -595,36 +561,37 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-cardArray  . . . . . . . . . . .	Byte	 000001CB _DATA	
+cardArray  . . . . . . . . . . .	Byte	 00000184 _DATA	
 charCount  . . . . . . . . . . .	L Near	 00000000 FLAT	External
-columnBombs  . . . . . . . . . .	Byte	 0000020C _DATA	
+clearConsole@0 . . . . . . . . .	L Near	 00000000 FLAT	External
+columnBombs  . . . . . . . . . .	Byte	 000001C5 _DATA	
 columnPrompt . . . . . . . . . .	Byte	 00000034 _DATA	
-columnTotals . . . . . . . . . .	Byte	 00000207 _DATA	
-faceDown . . . . . . . . . . . .	Byte	 00000211 _DATA	
-facingArray  . . . . . . . . . .	Byte	 000001E4 _DATA	
-finalDialog  . . . . . . . . . .	Byte	 0000010A _DATA	
-finalTerm  . . . . . . . . . . .	Byte	 000000F5 _DATA	
-gameBackSpacer . . . . . . . . .	Byte	 00000170 _DATA	
-gameColumnBombs  . . . . . . . .	Byte	 000001B0 _DATA	
-gameColumnTotals . . . . . . . .	Byte	 000001A9 _DATA	
-gameFrontSpacer  . . . . . . . .	Byte	 0000016C _DATA	
-gameLoopDialog . . . . . . . . .	Byte	 0000006B _DATA	
-gameOverDialog . . . . . . . . .	Byte	 000000C0 _DATA	
-gameRowBombs . . . . . . . . . .	Byte	 00000174 _DATA	
-gameRowBottom  . . . . . . . . .	Byte	 0000017D _DATA	
-gameRowTop . . . . . . . . . . .	Byte	 00000138 _DATA	
-gameRowTotalAppend . . . . . . .	Byte	 00000169 _DATA	
-gameTop  . . . . . . . . . . . .	Byte	 0000010E _DATA	
-invalidInputDialog . . . . . . .	Byte	 0000009C _DATA	
-leadingZero  . . . . . . . . . .	Byte	 000001BA _DATA	
-lineEnd  . . . . . . . . . . . .	Byte	 000001B8 _DATA	
-playAgainDialog  . . . . . . . .	Byte	 000000CE _DATA	
+columnTotals . . . . . . . . . .	Byte	 000001C0 _DATA	
+faceDown . . . . . . . . . . . .	Byte	 00000172 _DATA	
+facingArray  . . . . . . . . . .	Byte	 0000019D _DATA	
+gameBackSpacer . . . . . . . . .	Byte	 00000126 _DATA	
+gameColumnBombs  . . . . . . . .	Byte	 00000165 _DATA	
+gameColumnTotals . . . . . . . .	Byte	 0000015F _DATA	
+gameFrontSpacer  . . . . . . . .	Byte	 00000122 _DATA	
+gameOverDialog . . . . . . . . .	Byte	 0000008F _DATA	
+gameRowBombs . . . . . . . . . .	Byte	 0000012A _DATA	
+gameRowBottom  . . . . . . . . .	Byte	 00000133 _DATA	
+gameRowTop . . . . . . . . . . .	Byte	 000000EE _DATA	
+gameRowTotalAppend . . . . . . .	Byte	 0000011F _DATA	
+gameTop  . . . . . . . . . . . .	Byte	 000000C4 _DATA	
+invalidInputDialog . . . . . . .	Byte	 0000006B _DATA	
+leadingSpace . . . . . . . . . .	Byte	 00000170 _DATA	
+leadingZero  . . . . . . . . . .	Byte	 0000016E _DATA	
+lineEnd  . . . . . . . . . . . .	Byte	 0000016C _DATA	
+playAgainDialog  . . . . . . . .	Byte	 0000009D _DATA	
 printString  . . . . . . . . . .	L Near	 00000000 FLAT	External
+random . . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 readline . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-rowBombs . . . . . . . . . . . .	Byte	 00000202 _DATA	
+returnAddress  . . . . . . . . .	DWord	 000001CA _DATA	
+rowBombs . . . . . . . . . . . .	Byte	 000001BB _DATA	
 rowPrompt  . . . . . . . . . . .	Byte	 00000000 _DATA	
-rowTotals  . . . . . . . . . . .	Byte	 000001FD _DATA	
-victorySpeech  . . . . . . . . .	Byte	 000001BC _DATA	
+rowTotals  . . . . . . . . . . .	Byte	 000001B6 _DATA	
+victorySpeech  . . . . . . . . .	Byte	 00000175 _DATA	
 writeNumber  . . . . . . . . . .	L Near	 00000000 FLAT	External
 writeline  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 

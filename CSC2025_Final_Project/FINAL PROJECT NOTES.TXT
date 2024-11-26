@@ -190,28 +190,16 @@ rowInfoLoop:
 		;else, continue from loop
 
 ---
-POTENTIAL FOR COLUMN FX???
 
-    mov ebx, 0
-    mov ecx, 0
-columnInfoLoop:
-    push ecx
-    mov ecx, 0
-    columnInfoInnerLoop:
-    movzx eax, [cardArray+ebx]
-    cmp eax, 0
-    jg columnTotalAdd
-        add [columnBombs], 1
-        jmp columnIncrement
-    columnTotalAdd:
-        add [columnTotals], al
-    columnIncrement:
-        add ebx, 1
-        add ecx, 1
-        cmp ecx, 5
-        jl columnInfoInnerLoop
-    pop ecx
-    add ecx, 1
-    cmp ecx, 5
-    jl columnInfoLoop
-;end columnInfoLoop
+clean up gameloop.asm into separate routine files
+write+add how-to-play section
+add score
+clean up info display
+irvine graphics
+---
+
+WELCOME TO THE BOMB CARD-FLIP GAME!
+
+Would you like to read how to play? [y/n] 
+
+This is a card flip game. You are presented with 25 cards arranged in 5 rows of 5, all face down. Each card can be either 1, 2, 3, or a bomb! Your goal is to flip all the 2s and 3s. If you flip a bomb, you lose. At the end of ever row and the bottom of every column, the total sum of the non-bomb cards in that row or column is displayed, as well as a count of the number of bombs in that row or column. With clever flipping, and a bit of luck, I'm sure you can win (and not blow up)! Are you ready to play? [y/y]

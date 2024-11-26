@@ -24,7 +24,10 @@
     <MASM Include="gameLoop.asm">
       <Filter>Source Files</Filter>
     </MASM>
-    <MASM Include="gameRoutines.asm">
+    <MASM Include="printString.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="random.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>

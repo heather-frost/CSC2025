@@ -6,6 +6,7 @@
 ; Revised: WWC 15 March 2024 Added this comment ot force a new commit.
 ; Revised: WWC 13 September 2024 Minor updates for Fall 2024 semester.
 ; Revised: SAM 15 November 2024 cleaned up .data
+; Revised: SAM 25 November 2024 added clearconsole function from Wayne's updated version
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
 ; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
@@ -25,10 +26,13 @@
 .model flat
 
 ; Library calls used for input from and output to the console
-extern  _GetStdHandle@4:near
-extern  _WriteConsoleA@20:near
-extern  _ReadConsoleA@20:near
-extern  _ExitProcess@4: near
+extern	_GetStdHandle@4:	near
+extern	_WriteConsoleA@20:	near
+extern	_ReadConsoleA@20:	near
+extern	_ExitProcess@4:		near
+extern  _GetConsoleMode@8:  near
+extern  _SetConsoleMode@8:  near
+extern _SetConsoleCursorPosition@8: near
 
 .data
 
@@ -44,6 +48,11 @@ writeBuffer     byte  1024        DUP(00h)
 numberBuffer    byte  1024        DUP(00h)
 numCharsToRead  dword 1024
 numCharsRead    dword ?         ; Unset or uninitialized
+NULL			equ		0
+
+; Needed for clearing the console.
+clear_console byte 1bh, '[', '2', 'J'
+clear_scroll_back byte 1bh, '[', '3', 'J'
 
 
 .code
@@ -173,5 +182,76 @@ numExit:
     ret
     
 writeNumber ENDP
+
+
+; clears console and scroll back too
+; returns console mode back to normal
+; https://learn.microsoft.com/en-us/windows/console/clearing-the-screen
+; can get much more advanced here: https://en.wikipedia.org/wiki/ANSI_escape_code
+; clearConsole@0()
+; output: void
+clearConsole@0 proc near
+    push ebp ; save base
+    mov ebp, esp ; get stack pointer
+
+    sub esp, 4
+    push esp
+    push outputHandle
+    ; https://learn.microsoft.com/en-us/windows/console/getconsolemode
+    ; BOOL WINAPI GetConsoleMode(
+    ; _In_  HANDLE  hConsoleHandle,
+    ; _Out_ LPDWORD lpMode
+    ; );
+    call _GetConsoleMode@8
+
+    cmp eax, 0
+    je  _error
+
+    mov eax, [ebp - 4] ; get current console mode
+    or eax, 04h ; ENABLE_VIRTUAL_TERMINAL_PROCESSING ; https://learn.microsoft.com/en-us/windows/console/setconsolemode
+
+    ; https://learn.microsoft.com/en-us/windows/console/setconsolemode
+    ; BOOL WINAPI SetConsoleMode(
+    ; _In_ HANDLE hConsoleHandle,
+    ; _In_ DWORD  dwMode
+    ; );
+    push eax
+    push outputHandle
+    call _SetConsoleMode@8
+
+    cmp eax, 0
+    je _error
+   
+    ; print "\x1b[2J", clear viewable screen
+    ; print "\x1b[3J", clear scroll back
+    ; "\x1b" is an escape char = 1bh
+    push 4
+    push offset clear_console
+    call writeLine
+
+    push 4
+    push offset clear_scroll_back
+    call writeLine
+
+	push 0						; Coordinates 0,0 to upper left corner.
+	push  outputHandle			; [--]
+	call _SetConsoleCursorPosition@8
+
+
+    ; restore the mode on the way out to be nice to other command-Line applications
+    ; pop eax   ; no need to pop and push
+    ; push eax
+    push outputHandle
+    call _SetConsoleMode@8
+
+    jmp _exit
+
+_error:
+
+_exit:
+    mov esp, ebp ; because of the error handling, make sure no vars are forgotten
+    pop ebp
+    ret 4
+clearConsole@0 endp
 
 END

@@ -4,9 +4,9 @@
 ; hosts routines for gameLoop.asm
 
 ; Register usage:
-;     EAX - 
-;     EBX - 
-;     ECX - 
+;     EAX - routine communication
+;     EBX - holds parameter
+;     EDX - return address juggling
 
 .model flat
 

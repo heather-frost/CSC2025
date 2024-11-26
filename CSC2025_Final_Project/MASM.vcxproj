@@ -134,8 +134,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <MASM Include="gameLoop.asm" />
-    <MASM Include="gameRoutines.asm" />
+    <MASM Include="printString.asm" />
     <MASM Include="main.asm" />
+    <MASM Include="random.asm" />
     <MASM Include="readWrite.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

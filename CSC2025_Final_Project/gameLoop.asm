@@ -15,20 +15,16 @@ extern readline: near
 extern charCount: near
 extern writeNumber: near
 extern printString: near
+extern clearConsole@0: near
+extern random: near
 
 .data
 
 rowPrompt               byte  "Which row would you like to flip a card in? [1-5]: ", 0
 columnPrompt               byte  "Which column would you like to flip a card in? [1-5]: ", 0
-gameLoopDialog     byte  10,"Starting with 1 and 2, the terms produced are: ",0
-
 invalidInputDialog    byte  "Please enter a valid [1-5] input.",10,10,0
-
 gameOverDialog       byte    10,"You blew up!",0
 playAgainDialog     byte    10,10,"Would you like to play again? [y/n] ",0
-finalTerm            byte  10,10,"The value of term ",0
-finalDialog          byte  "is ",0
-
 gameTop              byte  " _______________________________________", 10,0
 gameRowTop           byte  "|       |       |       |       |       |TOTAL: ",0
 gameRowTotalAppend   byte 10, "|",0
@@ -36,55 +32,43 @@ gameFrontSpacer        byte  "   ",0
 gameBackSpacer        byte  "  |",0
 gameRowBombs         byte   "BOMBS: 0",0
 gameRowBottom        byte  10,"|_______|_______|_______|_______|_______|", 10,0
-gameColumnTotals    byte    " TOT: ",0
-gameColumnBombs     byte    " BMB: 0",0
+gameColumnTotals    byte    "TOT: ",0
+gameColumnBombs     byte    "BMB: 0",0
 lineEnd             byte    10,0
 leadingZero         byte    "0",0
-
+leadingSpace        byte    " ",0
+faceDown    byte "? ",0
 victorySpeech              byte 10,10,"VICTORY!!!",10,10,0
 
 cardArray db 25 dup(?)
-facingArray db 25 dup(0)
+facingArray db 25 dup(?)
 rowTotals    db  5 dup(?)
 rowBombs    db  5 dup(?)
 columnTotals    db  5 dup(?)
 columnBombs    db  5 dup(?)
 
-faceDown    byte "? ",0
-
+returnAddress dd ?
 
 .code
 
 ;; Call gameLoop() - No Parameters, no return value
 gameLoop PROC near
 _gameLoop:
+pop edx
+mov [returnAddress], edx
+push edx
 
 Setup:
 ; populates cardArray w/ [0-3]
     mov ebx, 0
 StaticPopulationLoop:
-    RDRAND EAX
-
-    xor  dx, dx
-    mov  cx, 10    
-    div  cx        ; dx now contains [0-9] remainder of division
-
-    mov ax, dx
-    xor dx, dx
-    mov cx, 2
-    div cx        ; ax now contains [0-4]
-
-    cmp ax, 4
-    je StaticPopulationLoop    ; don't want 4s
-    
-    mov dx, ax
-    mov eax, 0
-    add ax, dx  ;random [0-3] is in eax
-
+    call random
     mov [cardArray+ebx], al
+    mov [facingArray+ebx], 0
     add ebx, 1
     cmp ebx, 25
     jl StaticPopulationLoop
+;end static population loop
 
     mov ebx, 0
     mov ecx, 0
@@ -141,6 +125,7 @@ columnInfoLoop:
 
 gameLoopStart:
     ; DISPLAY GAME STATE
+    call clearConsole@0 
     push offset gameTop
     call printString
     mov ecx, 0
@@ -239,6 +224,8 @@ gameLoopStart:
         jl printLoop
     ;end printLoop
     
+    push offset leadingSpace
+    call printString
     mov ebx, 0
     mov ecx, 0
     columnTotalsPrint:
@@ -271,6 +258,8 @@ gameLoopStart:
 
     columnBombsPrintSetup:
         push offset lineEnd
+        call printString
+        push offset leadingSpace
         call printString
         mov ebx, 0
         mov ecx, 0
@@ -361,19 +350,6 @@ victoryCheckContinue:
     jmp victoryCheck
 
 victory:
-    push eax    ;2nd writeNumber parameter
-    add  ebx, 1
-    push ebx    ;1st writeNumber parameter
-    push  offset finalTerm
-    call  printString
-
-    call  writeNumber
-
-    push  offset finalDialog
-    call  printString
-
-    call  writeNumber
-
     push offset victorySpeech
     call printString
 
@@ -399,6 +375,8 @@ playAgain:
     jmp playAgain
      
 exit:
+    mov edx, [returnAddress]
+    push edx
     ret     ; Return to the main program.
 
 gameOver:
@@ -412,7 +390,7 @@ invalidInputError:
     ; Print invalidInputDialog
     push  offset invalidInputDialog
     call  printString
-    jmp gameLoopStart
+    jmp guessInput
 ; End invalidInputError
     
 gameLoop ENDP
