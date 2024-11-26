@@ -4,19 +4,18 @@
 ; gameLoop adapted from fibonacci counter
 
 ; Register usage:
-;     EAX - external routine communication
-;     EBX - 
-;     ECX - 
+;     EAX - external routine communication, card value
+;     EBX - card index
+;     ECX - counter, row index, column index
 
 .model flat
 
-extern writeline: near
 extern readline: near
-extern charCount: near
 extern writeNumber: near
-extern printString: near
 extern clearConsole@0: near
+extern printString: near
 extern random: near
+extern getFirstChar: near
 
 .data
 
@@ -59,25 +58,25 @@ mov [returnAddress], edx
 push edx
 
 Setup:
-; populates cardArray w/ [0-3]
-    mov ebx, 0
-StaticPopulationLoop:
+
+    mov ecx, 0
+CardPopulationLoop: ; populates cards w/ [0-3] and sets all face down
     call random
-    mov [cardArray+ebx], al
-    mov [facingArray+ebx], 0
-    add ebx, 1
-    cmp ebx, 25
-    jl StaticPopulationLoop
-;end static population loop
+    mov [cardArray+ecx], al
+    mov [facingArray+ecx], 0
+    add ecx, 1
+    cmp ecx, 25
+    jl CardPopulationLoop
+;end card population loop
 
     mov ebx, 0
     mov ecx, 0
 rowInfoLoop:
-    mov eax, 0
     mov [rowBombs+ecx], 0
     mov [rowTotals+ecx], 0
     mov [columnBombs+ecx], 0
     mov [columnTotals+ecx], 0
+    mov eax, 0
     rowInfoInnerLoop:
         push eax
         movzx eax, [cardArray+ebx]
@@ -136,11 +135,9 @@ gameLoopStart:
         pop eax
         push eax
         push ecx
-        push edx
         mov edx, 0
         mov ecx, 5
         div ecx
-        pop edx
         pop ecx
         movzx eax, [rowTotals+eax]
         cmp eax, 10
@@ -292,48 +289,37 @@ guessInput:
     push  offset rowPrompt
     call  printString
     call  readline
-    
-    ;convert user input from ASCII to integer
-    mov    ecx,0
-    mov    ebx,0
-
-    mov  cl,[eax]                    ; Look at the character in the string
-    sub  cl,'0'
-    add  ebx,ecx
-
-    cmp ebx,5
+    call  getFirstChar
+    sub  al,'0'
+    cmp eax,5
     jg invalidInputError
-    cmp ebx,1
+    cmp eax,1
     jl invalidInputError
+    mov  ebx,eax
     push ebx
 
     ;Guess Input: Column
     push  offset columnPrompt
     call  printString
     call  readline
-    
-    ;convert user input from ASCII to integer
-    mov    ecx,0
+    call  getFirstChar
+    sub  al,'0'
+    cmp eax,5
+    jg invalidInputError
+    cmp eax,1
+    jl invalidInputError
     pop    ebx
     sub  ebx, 1
     imul ebx, 5
-
-    mov  cl,[eax]                    ; Look at the character in the string
-    sub  cl,'0'
-
-    cmp ecx,5
-    jg invalidInputError
-    cmp ecx,1
-    jl invalidInputError
-    add  ebx,ecx
+    add  ebx,eax
+    sub  ebx, 1
 
 ;gameover check
-    mov  eax, 0
-    sub  ebx, 1
-    mov  al, [cardArray+ebx]
-    mov  [facingArray+ebx], 1
+    movzx eax, [cardArray+ebx]
     cmp  eax,0
     je    gameOver
+    
+    mov  [facingArray+ebx], 1 ;flip card face up
 
     mov ecx, 0
 victoryCheck:
@@ -353,24 +339,20 @@ victory:
     push offset victorySpeech
     call printString
 
-
 playAgain:
     push  offset playAgainDialog
     call  printString
 
     call  readline
-    
-    ; Look at the character in the string
-    mov    ecx,0
-    mov  cl,[eax]
+    call  getFirstChar
 
-    cmp ecx, 110
+    cmp eax, 110
     je exit
-    cmp ecx, 78
-    je exit
-    cmp ecx, 121
+    cmp eax, 121
     je setup
-    cmp ecx, 89
+    cmp eax, 78
+    je exit
+    cmp eax, 89
     je setup
     jmp playAgain
      

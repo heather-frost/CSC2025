@@ -1,19 +1,15 @@
 ; Main Console program
 ; Spencer Medberry
 ; 15 November 2024
-; hosts routines for gameLoop.asm
 
 ; Register usage:
-;     EAX - routine communication
-;     EBX - holds parameter
-;     EDX - return address juggling
+;     EAX - external routine communication
+;     EBX - parameter
 
 .model flat
 
 extern writeline: near
-extern readline: near
 extern charCount: near
-extern writeNumber: near
 
 .data
 
@@ -23,9 +19,9 @@ extern writeNumber: near
 ;; Parameters: address of string to be printed
 printString PROC near
 _printString:
-    pop  edx
+    pop  eax
     pop  ebx
-    push edx
+    push eax
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax

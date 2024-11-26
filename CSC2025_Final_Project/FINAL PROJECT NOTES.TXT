@@ -193,6 +193,7 @@ rowInfoLoop:
 
 clean up gameloop.asm into separate routine files
 write+add how-to-play section
+improve invalid input handling
 add score
 clean up info display
 irvine graphics

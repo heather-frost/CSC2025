@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <MASM Include="gameLoop.asm" />
+    <MASM Include="getFirstChar.asm" />
     <MASM Include="printString.asm" />
     <MASM Include="main.asm" />
     <MASM Include="random.asm" />
