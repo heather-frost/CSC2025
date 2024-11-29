@@ -17,6 +17,7 @@
 ;;      operates on eax
 ;;      intended for use with user input
 ;; returns first character of string
+;;      returns in eax
 getFirstChar PROC near
 _getFirstChar:
     push ebx

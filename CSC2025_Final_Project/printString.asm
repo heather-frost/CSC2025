@@ -19,9 +19,9 @@ extern charCount: near
 ;; Parameters: address of string to be printed
 printString PROC near
 _printString:
-    pop  eax
-    pop  ebx
-    push eax
+    pop   eax
+    pop   ebx
+    push  eax
         ;; Call charCount(addr)
         ;; Parameters: addr is address of buffer = &addr[0]
         ;; Returns character count in eax

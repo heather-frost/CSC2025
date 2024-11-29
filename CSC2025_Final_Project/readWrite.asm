@@ -6,7 +6,7 @@
 ; Revised: WWC 15 March 2024 Added this comment ot force a new commit.
 ; Revised: WWC 13 September 2024 Minor updates for Fall 2024 semester.
 ; Revised: SAM 15 November 2024 cleaned up .data
-; Revised: SAM 25 November 2024 added clearconsole function from Wayne's updated version
+; Revised: SAM 25 November 2024 added clearConsole@0 routine from Wayne Cook's updated version
 ; Register names:
 ; Register names are NOT case sensitive eax and EAX are the same register
 ; x86 uses 8 registers. EAX (Extended AX register has 32 bits while AX is
