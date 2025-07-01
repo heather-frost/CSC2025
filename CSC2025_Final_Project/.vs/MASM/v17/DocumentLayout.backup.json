@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\getFirstChar.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:getFirstChar.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\gameLoop.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:gameLoop.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
@@ -11,20 +15,16 @@
       "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:random.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\getFirstChar.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:getFirstChar.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\printString.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:printString.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\main.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:main.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\readWrite.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:readWrite.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\main.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:main.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\printString.asm||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{32FAFC8A-8573-4FF9-A3C5-4F7CE910AF4C}|MASM.vcxproj|solutionrelative:printString.asm||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,12 +54,11 @@
               "RelativeToolTip": "readWrite.asm",
               "ViewState": "AgIAACQAAAAAAAAAAAAkwDUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.345Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-27T17:38:40.345Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "main.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\main.asm",
               "RelativeDocumentMoniker": "main.asm",
@@ -67,51 +66,47 @@
               "RelativeToolTip": "main.asm",
               "ViewState": "AgIAABoAAAAAAAAAAAAcwCgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-09-27T17:38:40.271Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-27T17:38:40.271Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "gameLoop.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\gameLoop.asm",
               "RelativeDocumentMoniker": "gameLoop.asm",
-              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\gameLoop.asm*",
-              "RelativeToolTip": "gameLoop.asm*",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABcAAAAaAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\gameLoop.asm",
+              "RelativeToolTip": "gameLoop.asm",
+              "ViewState": "AgIAAKYAAAAAAAAAAAAAABEAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-11-01T17:23:50.515Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-01T17:23:50.515Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "printString.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\printString.asm",
               "RelativeDocumentMoniker": "printString.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\printString.asm",
               "RelativeToolTip": "printString.asm",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACUAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-11-15T21:56:43.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-15T21:56:43.031Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "random.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\random.asm",
               "RelativeDocumentMoniker": "random.asm",
               "ToolTip": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\random.asm",
               "RelativeToolTip": "random.asm",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABoAAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-11-26T17:35:42.867Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T17:35:42.867Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "getFirstChar.asm",
               "DocumentMoniker": "C:\\Users\\Spencer\\Documents\\GitHub\\CSC2025\\CSC2025_Final_Project\\getFirstChar.asm",
               "RelativeDocumentMoniker": "getFirstChar.asm",
